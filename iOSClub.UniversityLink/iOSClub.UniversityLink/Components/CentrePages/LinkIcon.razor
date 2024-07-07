@@ -1,0 +1,114 @@
+﻿@page "/LinkIcon"
+@using Newtonsoft.Json.Linq
+@inject IHttpClientFactory HttpClientFactory
+
+<Flex Justify="center" Gap="10" Align="center">
+    <Space>
+        <Select DataSource="@(new[] { "全部", "类型", "名称" })"
+                @bind-Value="@SelectValue"
+                ItemValue="s => s"
+                ItemLabel="s => s"
+                Style="width: 10vw">
+        </Select>
+        <Search Placeholder="请输入搜索项" EnterButton="@("搜索")" @bind-Value="@SearchValue" Style="width: 30vw" Size="large"/>
+    </Space>
+    <Statistic GroupSeparator=" " Title="当前图标" Value="@IconModels.Length" TValue="int" Class="desktop-phone">
+        <PrefixTemplate>
+            <IconFont Type="icon-shuju"/>
+        </PrefixTemplate>
+    </Statistic>
+    <Button Type="primary" OnClick="GetAll">
+        恢复
+    </Button>
+</Flex>
+
+<Divider Style="margin: 10px"/>
+
+<GridRow Style="margin: 10px" Gutter="16">
+    @foreach (var context in IconModels)
+    {
+        <GridCol Xs=12 Sm=12 Md=8 Lg=8 Xl=8 Xxl=6>
+            <Card Hoverable Bordered="false" Style="border-radius: 10px;" BodyStyle="margin: 5px auto;text-align: center">
+                <IconFont Type="@($"icon-{context.font_class}")" Style="font-size: 30px"/>
+                <br/>
+                <p Style="font-size:18px;font-weight: bold">@context.name</p>
+                <Paragraph Copyable>@context.font_class</Paragraph>
+            </Card>
+        </GridCol>
+    }
+</GridRow>
+
+@code {
+
+    private record IconModel(string name, string font_class);
+
+    private IconModel[] AllIcons { get; set; } = [];
+
+    private IconModel[] IconModels { get; set; } = [];
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var httpClient = HttpClientFactory.CreateClient();
+        var response = await httpClient.GetStringAsync("https://at.alicdn.com/t/c/font_4612465_yfunknjjzmb.json?spm=a313x.manage_type_myprojects.i1.6.70953a81aBEWza&file=font_4612465_yfunknjjzmb.json");
+        var a = JObject.Parse(response);
+        AllIcons = a["glyphs"]?.Select(x => new IconModel(x["name"]?.ToObject
+                <string>()!
+            , x["font_class"]?.ToObject
+                <string>()!)).ToArray() ?? [];
+        IconModels = AllIcons;
+    }
+
+    private static ListGridType grid => new()
+    {
+        Gutter = 16,
+        Xs = 2,
+        Sm = 2,
+        Md = 3,
+        Lg = 3,
+        Xl = 3,
+        Xxl = 4
+    };
+
+    private string _searchValue = "";
+    private string _selectValue = "全部";
+
+    private string SearchValue
+    {
+        get => _searchValue;
+        set
+        {
+            _searchValue = value;
+            Search();
+        }
+    }
+
+    private string SelectValue
+    {
+        get => _selectValue;
+        set
+        {
+            _selectValue = value;
+            Search();
+        }
+    }
+
+    private void GetAll()
+    {
+        SelectValue = "全部";
+        SearchValue = "";
+    }
+
+    private void Search()
+    {
+        if (string.IsNullOrEmpty(SelectValue)) return;
+        IconModels = SelectValue switch
+        {
+            "全部" => AllIcons,
+            "类型" => AllIcons.Where(x => x.font_class.Contains(SearchValue)).ToArray(),
+            "名称" => AllIcons.Where(x => x.name.Contains(SearchValue)).ToArray(),
+            _ => IconModels
+        };
+    }
+
+}

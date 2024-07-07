@@ -1,0 +1,48 @@
+﻿@layout HomeLayout
+@using global::UniversityLink.DataModels
+@inherits LayoutComponentBase
+
+<PageView Style="height: 100%;overflow: auto">
+    <Context>
+        @if (string.IsNullOrEmpty(Member.UserId))
+        {
+            <Empty Image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+                   Style="padding: 20px" Description="@("这里空空如也")"/>
+        }
+        else
+        {
+            <GridRow>
+                <GridCol Class="desktop-phone" Md="4" Lg="4" Xl="4" Xxl="4">
+                    <Menu Theme="MenuTheme.Light"
+                          Mode="MenuMode.Inline">
+                        @foreach (var nav in navs)
+                        {
+                            <MenuItem RouterLink="@nav.Url" RouterMatch="NavLinkMatch.All">
+                                <IconFont Style="font-size: 20px" Type="@($"icon-{nav.Icon}")"/>
+                                <span>@nav.Title</span>
+                            </MenuItem>
+                        }
+                    </Menu>
+                </GridCol>
+                <GridCol Xs="24" Sm="24" Md="20" Lg="20" Xl="20" Xxl="20">
+                    @Body
+                </GridCol>
+            </GridRow>
+        }
+    </Context>
+</PageView>
+
+@code {
+    [CascadingParameter] public UserModel Member { get; set; } = new();
+
+    private record NavModel(string Title, string Url, string Icon);
+
+    private readonly List<NavModel> navs =
+    [
+        new NavModel("主页", "/Centre", "wode1"),
+        new NavModel("链接", "/AddLink", "task1"),
+        new NavModel("链接组", "/AddCategory", "plan"),
+        new NavModel("查看全部图标", "/LinkIcon", "chakankucun")
+    ];
+
+}
