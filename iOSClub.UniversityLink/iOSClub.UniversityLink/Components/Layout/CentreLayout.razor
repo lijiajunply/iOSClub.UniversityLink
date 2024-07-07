@@ -1,8 +1,8 @@
-﻿@layout HomeLayout
+﻿@layout MainLayout
 @using global::UniversityLink.DataModels
 @inherits LayoutComponentBase
 
-<PageView Style="height: 100%;overflow: auto">
+<PageView Style="height: 100%;overflow: auto" ContextStyle="height: 80%;">
     <Context>
         @if (string.IsNullOrEmpty(Member.UserId))
         {
@@ -12,7 +12,7 @@
         else
         {
             <GridRow>
-                <GridCol Class="desktop-phone" Md="4" Lg="4" Xl="4" Xxl="4">
+                <GridCol Md="4" Lg="4" Xl="4" Xxl="4" Class="desktop-phone">
                     <Menu Theme="MenuTheme.Light"
                           Mode="MenuMode.Inline">
                         @foreach (var nav in navs)
@@ -40,9 +40,8 @@
     private readonly List<NavModel> navs =
     [
         new NavModel("主页", "/Centre", "wode1"),
-        new NavModel("链接", "/AddLink", "task1"),
-        new NavModel("链接组", "/AddCategory", "plan"),
-        new NavModel("查看全部图标", "/LinkIcon", "chakankucun")
+        new NavModel("链接组", "/Category", "baogao1"),
+        new NavModel("查看全部图标", "/LinkIcon", "shangpinzhinan")
     ];
 
 }

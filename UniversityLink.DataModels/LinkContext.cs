@@ -30,14 +30,6 @@ public sealed class LinkContext : DbContext
     public DbSet<LinkModel> Links { get; init; }
     public DbSet<CategoryModel> Categories { get; init; }
     public  DbSet<UserModel> Users { get; init; }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<LinkModel>()
-            .HasOne(x => x.Category)
-            .WithMany(x => x.Links)
-            .IsRequired(false);
-    }
 }
 
 public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<LinkContext>

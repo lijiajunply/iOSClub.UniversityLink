@@ -103,3 +103,35 @@ a, .btn-link {
         display: none !important;
     }
 }
+
+.ant-modal-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.ant-modal-body {
+    border-radius: 0 0 12px 12px !important;
+}
+
+.ant-modal-content {
+    border-radius: 12px !important;
+}
+
+.a-btn{
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+.a-btn {
+    display: inline-block;
+    transition: .2s;
+    cursor: pointer;
+    margin: 5px 5px 0 0;
+    border-radius: 10px;
+    padding: 5px;
+    border: 1px solid #ffffff;
+}
+
+.a-btn:hover {
+    transform: scale(1.02);
+    border-color: #1890ff;
+}

@@ -1,5 +1,7 @@
 ﻿@page "/Centre"
-<h3>Centre</h3>
+@using global::UniversityLink.DataModels
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<LinkContext> DbFactory
 
 @code {
     

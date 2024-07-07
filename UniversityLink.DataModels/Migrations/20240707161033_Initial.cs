@@ -17,7 +17,8 @@ namespace UniversityLink.DataModels.Migrations
                     Key = table.Column<string>(type: "varchar(32)", nullable: false),
                     Name = table.Column<string>(type: "varchar(32)", nullable: false),
                     Description = table.Column<string>(type: "varchar(32)", nullable: true),
-                    Icon = table.Column<string>(type: "varchar(16)", nullable: false)
+                    Icon = table.Column<string>(type: "varchar(16)", nullable: false),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -48,22 +49,27 @@ namespace UniversityLink.DataModels.Migrations
                     Icon = table.Column<string>(type: "varchar(16)", nullable: false),
                     Url = table.Column<string>(type: "varchar(64)", nullable: false),
                     Description = table.Column<string>(type: "varchar(32)", nullable: true),
-                    CategoryKey = table.Column<string>(type: "varchar(32)", nullable: true)
+                    CategoryModelKey = table.Column<string>(type: "varchar(32)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Links", x => x.Key);
                     table.ForeignKey(
-                        name: "FK_Links_Categories_CategoryKey",
-                        column: x => x.CategoryKey,
+                        name: "FK_Links_Categories_CategoryModelKey",
+                        column: x => x.CategoryModelKey,
                         principalTable: "Categories",
                         principalColumn: "Key");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Links_CategoryKey",
+                name: "IX_Categories_Index",
+                table: "Categories",
+                column: "Index");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Links_CategoryModelKey",
                 table: "Links",
-                column: "CategoryKey");
+                column: "CategoryModelKey");
         }
 
         /// <inheritdoc />

@@ -5,57 +5,50 @@
 
 <PageTitle>建大Link - 西建大iOS Club</PageTitle>
 
-@if (Categories.Count == 0 && OtherLinks.Count == 0)
-{
-    <Empty Image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-           Style="padding: 20px" Description="@("当前还未添加任何链接")"/>
-}
-else
-{
-    <Flex Justify="center" Align="center">
-        <GridRow Class="block" Gutter="(20, 24)">
-            @foreach (var category in Categories)
-            {
-                <GridCol Xs="24" Sm="24" Md="24" Lg="12" Xl="12" Xxl="12">
-                    <AppleCard>
-                        <TitleTemplate>
-                            <Flex>
-                                <Icon Type="@category.Icon"/>
-                                <Title Level="2">@category.Name</Title>
-                            </Flex>
-                            <Paragraph Type="secondary">@category.Description</Paragraph>
-                        </TitleTemplate>
-                        <ContextTemplate>
-                            <Flex Gap="10">
-                                @foreach (var link in category.Links)
-                                {
-                                    <a href="@link.Url" target="_blank" class="button">
-                                        <Flex>
-                                            <Icon Type="@link.Icon"/>
-                                            <Title Level="2">@link.Name</Title>
-                                        </Flex>
-                                        <Paragraph Type="secondary">@link.Description</Paragraph>
-                                    </a>
-                                }
-                            </Flex>
-                        </ContextTemplate>
-                    </AppleCard>
-                </GridCol>
-            }
-        </GridRow>
-    </Flex>
-}
+<Flex Justify="center" Align="center">
+    <GridRow Class="block" Gutter="(30, 24)">
+        @for (var index = 0; index < Categories.Count; index++)
+        {
+            var category = Categories[index];
+            var i = index != Categories.Count - 1 ? index % 4 is 1 or 2 ? 15 : 9 : 24;
+            <GridCol Xs="24" Sm="24" Md="12" Lg="@i" Xl="@i" Xxl="@i">
+                <AppleCard>
+                    <TitleTemplate>
+                        <Flex Gap="10">
+                            <IconFont Style="font-size: 40px" Type="@($"icon-{category.Icon}")"/>
+                            <Title Level="2">@category.Name</Title>
+                        </Flex>
+                        <Paragraph Type="secondary">@category.Description</Paragraph>
+                    </TitleTemplate>
+                    <ContextTemplate>
+                        <Flex Gap="10">
+                            @foreach (var link in category.Links)
+                            {
+                                <a href="@link.Url" target="_blank" class="a-btn">
+                                    <IconFont Style="font-size: 20px" Type="@($"icon-{link.Icon}")"/>
+                                    <span style="color: #000000;font-size: 18px;font-weight: 500;">@link.Name</span>
+                                    <div style="color: #00000073;text-align: center">@link.Description</div>
+                                </a>
+                            }
+                        </Flex>
+                    </ContextTemplate>
+                </AppleCard>
+            </GridCol>
+        }
+    </GridRow>
+</Flex>
 
 @code
 {
     private List<CategoryModel> Categories { get; set; } = [];
-    private List<LinkModel> OtherLinks { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         await using var context = await DbFactory.CreateDbContextAsync();
-        Categories = await context.Categories.ToListAsync();
-        OtherLinks = await context.Links.Where(x => x.Category == null).ToListAsync();
+        Categories = await context.Categories
+            .Include(x => x.Links)
+            .OrderBy(x => x.Index)
+            .ToListAsync();
         await base.OnInitializedAsync();
     }
 }
@@ -70,7 +63,7 @@ else
         min-height: 100vh;
     }
 
-    .Layout-Header {
+    .Layout-Header, .Layout-Footer {
         background: rgba(255, 255, 255, 0.3);
         -webkit-backdrop-filter: blur(20px);
         backdrop-filter: blur(20px);
@@ -81,8 +74,8 @@ else
         border-radius: 10px;
     }
 
-    .a-btn {
-        border-radius: 10px;
+    .Layout-Footer-Title {
+        color: #f3f5f7;
     }
 
     .block {

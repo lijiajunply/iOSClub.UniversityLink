@@ -28,11 +28,16 @@ namespace UniversityLink.DataModels.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(16)");
 
+                    b.Property<int>("Index")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(32)");
 
                     b.HasKey("Key");
+
+                    b.HasIndex("Index");
 
                     b.ToTable("Categories");
                 });
@@ -42,7 +47,7 @@ namespace UniversityLink.DataModels.Migrations
                     b.Property<string>("Key")
                         .HasColumnType("varchar(32)");
 
-                    b.Property<string>("CategoryKey")
+                    b.Property<string>("CategoryModelKey")
                         .HasColumnType("varchar(32)");
 
                     b.Property<string>("Description")
@@ -62,7 +67,7 @@ namespace UniversityLink.DataModels.Migrations
 
                     b.HasKey("Key");
 
-                    b.HasIndex("CategoryKey");
+                    b.HasIndex("CategoryModelKey");
 
                     b.ToTable("Links");
                 });
@@ -95,11 +100,9 @@ namespace UniversityLink.DataModels.Migrations
 
             modelBuilder.Entity("UniversityLink.DataModels.LinkModel", b =>
                 {
-                    b.HasOne("UniversityLink.DataModels.CategoryModel", "Category")
+                    b.HasOne("UniversityLink.DataModels.CategoryModel", null)
                         .WithMany("Links")
-                        .HasForeignKey("CategoryKey");
-
-                    b.Navigation("Category");
+                        .HasForeignKey("CategoryModelKey");
                 });
 
             modelBuilder.Entity("UniversityLink.DataModels.CategoryModel", b =>

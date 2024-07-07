@@ -1,3 +1,160 @@
 ﻿@inherits LayoutComponentBase
+@using System.Security.Claims
+@using global::UniversityLink.DataModels
+@using iOSClub.UniversityLink.Models
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<LinkContext> DbFactory
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager Nav
 
-@Body
+<Layout Style="height: 100vh">
+    <Header Class="Layout-Header">
+        <Flex Align="center" Justify="space-between">
+            <a href="/">
+                <Flex Gap="large">
+                    <Image Src="iOS_Club_LOGO.png" Preview="false" Style="width:40px; height:40px"/>
+                    <div class="Layout-Title">XAUAT Link</div>
+                </Flex>
+            </a>
+            <Popover Class="Layout-Popover" Trigger="@(new[] { Trigger.Click })">
+                <TitleTemplate>
+                    <Space Size="@("middle")">
+                        @if (Member.Identity != "Founder")
+                        {
+                            <Image Style="height: 60px;width: 60px" Preview="false"
+                                   Src="@(Member.Gender == "男" ? "男生.png" : "女生.png")"/>
+                        }
+                        else
+                        {
+                            <Image Style="height: 60px;width: 60px" Preview="false" Src="iOS_Club_LOGO.png"/>
+                        }
+                        <div>
+                            <span style="font-size: 22px;font-weight: bold">@Member.UserName</span>
+                            <Paragraph Type="secondary">@Member.UserId</Paragraph>
+                        </div>
+                    </Space>
+                </TitleTemplate>
+                <ContentTemplate>
+                    @if (!string.IsNullOrEmpty(Member.UserId))
+                    {
+                        <Paragraph Type="secondary">
+                            当前身份:@UserModel.IdentityDictionary[Member.Identity]
+                        </Paragraph>
+                        <Button Type="@ButtonType.Text" Block Danger OnClick="Logout">
+                            退出登录
+                        </Button>
+                    }
+                    else
+                    {
+                        <Button Type="@ButtonType.Link" Block OnClick="@(() => Nav.NavigateTo("/Login"))">
+                            登录/注册
+                        </Button>
+                    }
+                </ContentTemplate>
+                <ChildContent>
+                    <Button Type="@ButtonType.Text">
+                        <IconFont Type=""/>
+                        <Icon Type="user" Theme="outline" Class="Layout-Title"/>
+                    </Button>
+                </ChildContent>
+            </Popover>
+        </Flex>
+    </Header>
+    <Content>
+        <CascadingValue Value="@Member">
+            @Body
+        </CascadingValue>
+        <Footer Class="Layout-Footer">
+            <p class="Layout-Footer-Title">
+                Copyright
+                <Icon Type="copyright" Theme="outline"/>
+                2023 - 2024 XAUAT iOS Club
+            </p>
+            <div>
+                <Space>
+                    <Split>
+                        <Divider Type="DirectionVHType.Vertical"/>
+                    </Split>
+                    <ChildContent>
+                        <SpaceItem Class="desktop-phone-flex">
+                            <a href="https://cn.xauat.edu.cn/" target="_blank">西安建筑科技大学</a>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <a href="https://beian.miit.gov.cn/" target="_blank">备案号 陕ICP备2024031872号</a>
+                        </SpaceItem>
+                        <SpaceItem Class="desktop-phone-flex">
+                            <a href="https://gitee.com/XAUATiOSClub" target="_blank">我们的Gitee组织</a>
+                        </SpaceItem>
+                    </ChildContent>
+                </Space>
+            </div>
+        </Footer>
+    </Content>
+</Layout>
+
+@code
+{
+    private UserModel Member { get; set; } = new() { UserName = "游客" };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            var name = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+            var identity = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
+            var id = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(identity) || string.IsNullOrEmpty(id)) return;
+            await using var context = await DbFactory.CreateDbContextAsync();
+            var model = await context.Users.FirstOrDefaultAsync(x => x.UserId == id && x.UserName == name);
+
+            if (model == null) return;
+
+            Member = model;
+
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task Logout()
+    {
+        await ((Provider)authStateProvider).Logout();
+        Member = new UserModel() { UserName = "游客" };
+        Nav.Refresh();
+    }
+}
+
+<style>
+    .Layout-Header {
+
+    }
+
+    .Layout-Title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #f3f5f7;
+    }
+
+    .Layout-Footer-Title {
+        
+    }
+
+    .Layout-Popover {
+        border-radius: 10px;
+    }
+
+    .ant-popover-inner {
+        border-radius: 12px;
+        padding: 10px;
+    }
+
+    .Layout-Footer {
+        text-align: center;
+    }
+</style>

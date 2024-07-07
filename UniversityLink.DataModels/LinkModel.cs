@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace UniversityLink.DataModels;
 
@@ -13,9 +14,9 @@ public class LinkModel : DataModel
     [Column(TypeName = "varchar(16)")] public string Icon { get; set; } = "";
     [Column(TypeName = "varchar(64)")] public string Url { get; set; } = "";
     [Column(TypeName = "varchar(32)")] public string? Description { get; set; } = "";
-    public CategoryModel? Category { get; set; } = new();
 }
 
+[Index(nameof(Index))]
 public class CategoryModel : DataModel
 {
     [Key]
@@ -25,11 +26,13 @@ public class CategoryModel : DataModel
     [Column(TypeName = "varchar(32)")] public string Name { get; set; } = "";
     [Column(TypeName = "varchar(32)")] public string? Description { get; set; } = "";
     [Column(TypeName = "varchar(16)")] public string Icon { get; set; } = "";
+    
+    public int Index { get; set; }
 
     public List<LinkModel> Links { get; set; } = [];
 }
 
-[Serializable]
+
 public class UserModel
 {
     [Column(TypeName = "varchar(32)")] public string UserName { get; set; } = "";
@@ -62,3 +65,5 @@ public class LoginModel
     public string Name { get; set; } = "";
     public string Id { get; set; } = "";
 }
+
+public record IconModel(string name, string font_class);
