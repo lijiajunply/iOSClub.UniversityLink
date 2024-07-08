@@ -17,22 +17,24 @@
                     <div class="Layout-Title">XAUAT Link</div>
                 </Flex>
             </a>
-            <Popover Class="Layout-Popover" Trigger="@(new[] { Trigger.Click })">
+            <Popover Class="Layout-Popover">
                 <TitleTemplate>
                     <Space Size="@("middle")">
-                        @if (Member.Identity != "Founder")
-                        {
-                            <Image Style="height: 60px;width: 60px" Preview="false"
-                                   Src="@(Member.Gender == "男" ? "男生.png" : "女生.png")"/>
-                        }
-                        else
-                        {
-                            <Image Style="height: 60px;width: 60px" Preview="false" Src="iOS_Club_LOGO.png"/>
-                        }
-                        <div>
+                        <SpaceItem>
+                            @if (Member.Identity != "Founder")
+                            {
+                                <Image Style="height: 60px;width: 60px" Preview="false"
+                                       Src="@(Member.Gender == "男" ? "男生.png" : "女生.png")"/>
+                            }
+                            else
+                            {
+                                <Image Style="height: 60px;width: 60px" Preview="false" Src="iOS_Club_LOGO.png"/>
+                            }
+                        </SpaceItem>
+                        <SpaceItem>
                             <span style="font-size: 22px;font-weight: bold">@Member.UserName</span>
                             <Paragraph Type="secondary">@Member.UserId</Paragraph>
-                        </div>
+                        </SpaceItem>
                     </Space>
                 </TitleTemplate>
                 <ContentTemplate>
@@ -53,8 +55,7 @@
                     }
                 </ContentTemplate>
                 <ChildContent>
-                    <Button Type="@ButtonType.Text">
-                        <IconFont Type=""/>
+                    <Button Type="@ButtonType.Text" OnClick="UserClick">
                         <Icon Type="user" Theme="outline" Class="Layout-Title"/>
                     </Button>
                 </ChildContent>
@@ -65,31 +66,6 @@
         <CascadingValue Value="@Member">
             @Body
         </CascadingValue>
-        <Footer Class="Layout-Footer">
-            <p class="Layout-Footer-Title">
-                Copyright
-                <Icon Type="copyright" Theme="outline"/>
-                2023 - 2024 XAUAT iOS Club
-            </p>
-            <div>
-                <Space>
-                    <Split>
-                        <Divider Type="DirectionVHType.Vertical"/>
-                    </Split>
-                    <ChildContent>
-                        <SpaceItem Class="desktop-phone-flex">
-                            <a href="https://cn.xauat.edu.cn/" target="_blank">西安建筑科技大学</a>
-                        </SpaceItem>
-                        <SpaceItem>
-                            <a href="https://beian.miit.gov.cn/" target="_blank">备案号 陕ICP备2024031872号</a>
-                        </SpaceItem>
-                        <SpaceItem Class="desktop-phone-flex">
-                            <a href="https://gitee.com/XAUATiOSClub" target="_blank">我们的Gitee组织</a>
-                        </SpaceItem>
-                    </ChildContent>
-                </Space>
-            </div>
-        </Footer>
     </Content>
 </Layout>
 
@@ -128,6 +104,11 @@
         Member = new UserModel() { UserName = "游客" };
         Nav.Refresh();
     }
+
+    private void UserClick()
+    {
+        Nav.NavigateTo(string.IsNullOrEmpty(Member.UserId) ? "/Login" : "/Centre");
+    }
 }
 
 <style>
@@ -141,10 +122,6 @@
         color: #f3f5f7;
     }
 
-    .Layout-Footer-Title {
-        
-    }
-
     .Layout-Popover {
         border-radius: 10px;
     }
@@ -152,9 +129,5 @@
     .ant-popover-inner {
         border-radius: 12px;
         padding: 10px;
-    }
-
-    .Layout-Footer {
-        text-align: center;
     }
 </style>

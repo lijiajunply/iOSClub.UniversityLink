@@ -3,6 +3,75 @@
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<LinkContext> DbFactory
 
+<PageTitle>数据中心</PageTitle>
+
+<Flex Justify="space-between" Align="center">
+    <Title>链接组</Title>
+    <Statistic GroupSeparator=" " Title="一共有" Value="@Categories.Count"
+               TValue="int" Class="desktop-phone">
+        <PrefixTemplate>
+            <IconFont Type="icon-shuju"/>
+        </PrefixTemplate>
+    </Statistic>
+</Flex>
+
+<Collapse Animation Bordered="false" Style="border-radius: 12px;overflow: hidden;">
+    @foreach (var category in Categories)
+    {
+        <Panel ShowArrow="false" Style="background-color: #ffffff;border: none" >
+            <HeaderTemplate>
+                <Flex Gap="10">
+                    <IconFont Style="font-size: 40px" Type="@($"icon-{category.Icon}")"/>
+                    <Title Level="2">@category.Name</Title>
+                </Flex>
+                <Paragraph Type="secondary">@category.Description</Paragraph>
+            </HeaderTemplate>
+            <ChildContent>
+                @if (category.Links.Count == 0)
+                {
+                    <Empty Image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+                           Style="padding: 20px" Description="@("当前还未添加任何链接")"/>
+                }
+                <AntList DataSource="category.Links" Style="margin: 10px">
+                    <ChildContent>
+                        <ListItem>
+                            <ChildContent>
+                                <ListItemMeta>
+                                    <AvatarTemplate>
+                                        <IconFont Style="font-size: 42px" Type="@($"icon-{context.Icon}")"/>
+                                    </AvatarTemplate>
+                                    <TitleTemplate>
+                                        <h3>@context.Name</h3>
+                                        <a href="@context.Url" target="_blank">@context.Url</a>
+                                    </TitleTemplate>
+                                    <DescriptionTemplate>
+                                        <p>@context.Description</p>
+                                    </DescriptionTemplate>
+                                </ListItemMeta>
+                            </ChildContent>
+                        </ListItem>
+                    </ChildContent>
+                </AntList>
+            </ChildContent>
+        </Panel>
+    }
+</Collapse>
+
 @code {
-    
+    private List<CategoryModel> Categories = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await using var context = await DbFactory.CreateDbContextAsync();
+        Categories = await context.Categories
+            .Include(x => x.Links)
+            .OrderBy(x => x.Index)
+            .ToListAsync();
+    }
 }
+
+<style>
+    .ant-collapse-header{
+        background-color: #f2f5f5
+    }
+</style>

@@ -6,6 +6,8 @@
 @inject NavigationManager Nav
 @* @attribute[Authorize(Roles = "Founder,Manager")] *@
 
+<PageTitle>@(string.IsNullOrEmpty(Key) ? "全部链接" : Model.Name) - 建大Link</PageTitle>
+
 <Modal Title="@("添加/更改链接组")"
        @bind-Visible="@_addModelVisible"
        OnOk="@HandleOk">

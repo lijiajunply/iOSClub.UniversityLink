@@ -38,18 +38,44 @@
     </GridRow>
 </Flex>
 
+<Footer Class="Layout-Footer" style="text-align: center;">
+    <p class="Layout-Footer-Title">
+        Copyright
+        <Icon Type="copyright" Theme="outline"/>
+        2023 - 2024 XAUAT iOS Club
+    </p>
+    <div>
+        <Space>
+            <Split>
+                <Divider Type="DirectionVHType.Vertical"/>
+            </Split>
+            <ChildContent>
+                <SpaceItem Class="desktop-phone-flex">
+                    <a href="https://cn.xauat.edu.cn/" target="_blank">西安建筑科技大学</a>
+                </SpaceItem>
+                <SpaceItem>
+                    <a href="https://beian.miit.gov.cn/" target="_blank">备案号 陕ICP备2024031872号</a>
+                </SpaceItem>
+                <SpaceItem Class="desktop-phone-flex">
+                    <a href="https://gitee.com/XAUATiOSClub" target="_blank">我们的Gitee组织</a>
+                </SpaceItem>
+            </ChildContent>
+        </Space>
+    </div>
+</Footer>
+
 @code
 {
     private List<CategoryModel> Categories { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
+        if(Categories.Count != 0)return;
         await using var context = await DbFactory.CreateDbContextAsync();
         Categories = await context.Categories
             .Include(x => x.Links)
             .OrderBy(x => x.Index)
             .ToListAsync();
-        await base.OnInitializedAsync();
     }
 }
 

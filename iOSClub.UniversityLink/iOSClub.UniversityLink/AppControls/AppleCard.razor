@@ -33,6 +33,14 @@
         transition: box-shadow 0.3s, border-color 0.3s;
     }
 
+    @@media screen and (max-width: 768px) {  
+        .apple-card:hover {
+            box-shadow: 0 0 !important;
+            animation: CardDisplay 0.2s ease;
+            transform: scale(0.98);
+        }
+    }
+
     .apple-card:not(:hover) {
         animation: CardDisplay2 0.2s ease;
     }

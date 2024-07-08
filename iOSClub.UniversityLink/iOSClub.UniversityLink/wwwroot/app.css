@@ -96,6 +96,25 @@ a, .btn-link {
     .phone-desktop-flex {
         display: flex !important;
     }
+
+    @keyframes CardDisplay {
+        0% {
+            transform: scale(1)
+        }
+
+        100% {
+            transform: scale(0.98)
+        }
+    }
+
+    @keyframes CardDisplay2 {
+        0% {
+            transform: scale(0.98)
+        }
+        100% {
+            transform: scale(1)
+        }
+    }
 }
 
 @media screen and (max-width: 1199px) {

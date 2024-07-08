@@ -29,7 +29,7 @@ public class CategoryModel : DataModel
     
     public int Index { get; set; }
 
-    public List<LinkModel> Links { get; set; } = [];
+    public List<LinkModel> Links { get; init; } = [];
 }
 
 
@@ -39,10 +39,10 @@ public class UserModel
 
     [Key]
     [Column(TypeName = "varchar(32)")]
-    public string UserId { get; set; } = "";
+    public string UserId { get; init; } = "";
 
-    [Column(TypeName = "varchar(2)")] public string Gender { get; set; } = "";
-    [Column(TypeName = "varchar(20)")] public string ClassName { get; set; } = "";
+    [Column(TypeName = "varchar(2)")] public string Gender { get; init; } = "";
+    [Column(TypeName = "varchar(20)")] public string ClassName { get; init; } = "";
 
     /// <summary>
     /// Founder : 创始人
@@ -66,4 +66,5 @@ public class LoginModel
     public string Id { get; set; } = "";
 }
 
+[Serializable]
 public record IconModel(string name, string font_class);
