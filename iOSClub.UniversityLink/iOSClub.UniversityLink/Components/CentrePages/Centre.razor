@@ -18,7 +18,7 @@
 <Collapse Animation Bordered="false" Style="border-radius: 12px;overflow: hidden;">
     @foreach (var category in Categories)
     {
-        <Panel ShowArrow="false" Style="background-color: #ffffff;border: none" >
+        <Panel ShowArrow="false" Style="background-color: #ffffff;border: none">
             <HeaderTemplate>
                 <Flex Gap="10">
                     <IconFont Style="font-size: 40px" Type="@($"icon-{category.Icon}")"/>
@@ -68,6 +68,7 @@
             .OrderBy(x => x.Index)
             .ToListAsync();
     }
+
 }
 
 <style>

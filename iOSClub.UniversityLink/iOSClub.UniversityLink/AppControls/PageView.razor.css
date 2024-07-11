@@ -34,7 +34,7 @@ header {
 }
 
 @media screen and (max-width: 768px)  {
-    .data{
+    .apple-pageView{
         border-radius : 0;
     }
 }
