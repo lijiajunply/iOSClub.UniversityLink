@@ -1,0 +1,218 @@
+﻿@page "/DataCentre"
+@using System.Text
+@using System.Text.Encodings.Web
+@using System.Text.Json
+@using System.Text.Unicode
+@using global::UniversityLink.DataModels
+@using iOSClub.UniversityLink.Models
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using JsonSerializer = System.Text.Json.JsonSerializer
+@using Title = AntDesign.Charts.Title
+@using Newtonsoft.Json
+@attribute [Authorize(Roles = "Founder , Manager")]
+@inject IDbContextFactory<LinkContext> DbFactory
+@inject IJSRuntime JS
+
+<PageTitle>数据中心 - 建大Link</PageTitle>
+
+<InputFile id="fileInput" OnChange="@UploadFiles" hidden multiple/>
+
+<Flex Justify="space-between" Style="margin: 20px">
+    <Title Level="2" Class="desktop-phone-flex">数据中心</Title>
+    <Space Size="@("large")">
+        <SpaceItem>
+            <Button Type="@("primary")" OnClick="JsonDownload">
+                下载数据
+            </Button>
+        </SpaceItem>
+        <SpaceItem>
+            <Upload Name="files">
+                <label class="ant-btn" for="fileInput">上传Json数据</label>
+            </Upload>
+        </SpaceItem>
+    </Space>
+</Flex>
+
+<Modal Title="@("添加/更改链接组")"
+       @bind-Visible="@_addModelVisible"
+       OnOk="@HandleOk">
+    <Form Model="@Model"
+          OnFinish="OnFinish"
+          @ref="@_form">
+        <FormItem Label="名称">
+            <Input @bind-Value="@context.UserName"/>
+        </FormItem>
+        <FormItem Label="身份">
+            <Select @bind-Value="@context.Identity"
+                    DataSource="@UserModel.IdentityDictionary"
+                    ItemValue="c=>c.Key"
+                    ItemLabel="c=>c.Value"></Select>
+        </FormItem>
+    </Form>
+</Modal>
+
+@code {
+
+    bool _addModelVisible;
+    private Form<UserModel> _form = new();
+    private UserModel Model { get; set; } = new();
+
+    private void ShowModal(UserModel user)
+    {
+        _addModelVisible = true;
+        Model = user;
+    }
+
+    private void HandleOk()
+    {
+        _form.Submit();
+    }
+
+    private async Task OnFinish()
+    {
+        if (!string.IsNullOrEmpty(Model.UserId))
+        {
+            await using var context = await DbFactory.CreateDbContextAsync();
+            var user = await context.Users.FirstOrDefaultAsync(x => x.UserId == Model.UserId);
+            if (user != null)
+            {
+                user.UserName = Model.UserName;
+                user.Identity = Model.Identity;
+            }
+            await context.SaveChangesAsync();
+        }
+
+        _addModelVisible = false;
+    }
+
+}
+
+<div style="margin: 20px">
+    <Pie Data="userTotal" Config="pieConfig"/>
+
+    <AntList DataSource="@Users" TItem="UserModel">
+        <ListItem>
+            <ChildContent>
+                <ListItemMeta>
+                    <AvatarTemplate>
+                        <Avatar Style="background-color: #7265e6; vertical-align: middle;" Size="large">
+                            @context.UserName.First()
+                        </Avatar>
+                    </AvatarTemplate>
+                    <TitleTemplate>
+                        <h3>@context.UserName</h3>
+                    </TitleTemplate>
+                    <DescriptionTemplate>
+                        <p>@UserModel.IdentityDictionary[context.Identity]</p>
+                    </DescriptionTemplate>
+                </ListItemMeta>
+            </ChildContent>
+            <Extra>
+                <Space Size="@("large")">
+                    <SpaceItem>
+                        <Button Type="@("primary")" OnClick="@(() => ShowModal(context))">
+                            编辑
+                        </Button>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <Button Danger Type="@ButtonType.Text">
+                            删除
+                        </Button>
+                    </SpaceItem>
+                </Space>
+            </Extra>
+        </ListItem>
+    </AntList>
+
+    <Divider/>
+
+    <Bar Data="linkData" Config="barConfig"/>
+</div>
+
+@code {
+
+    private readonly List<object> userTotal = [];
+
+    private readonly PieConfig pieConfig = new()
+    {
+        Radius = 0.8,
+        AngleField = "value",
+        ColorField = "type",
+        Label = new PieLabelConfig
+        {
+            Visible = true,
+            Type = "inner"
+        }
+    };
+
+    private List<UserModel> Users { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await using var context = await DbFactory.CreateDbContextAsync();
+        Users = await context.Users.ToListAsync();
+        var value = Users.Count(x => x.Identity == "Founder");
+        if (value != 0) userTotal.Add(new { type = "创始者", value });
+        value = Users.Count(x => x.Identity == "Manager");
+        if (value != 0) userTotal.Add(new { type = "管理者", value });
+        value = Users.Count(x => x.Identity == "Member");
+        if (value != 0) userTotal.Add(new { type = "普通成员", value });
+        var data = await context.Categories
+            .Include(x => x.Links)
+            .Select(x => new { 链接数量 = x.Links.Count, 链接组 = x.Name })
+            .ToListAsync();
+        linkData = data.OfType<object>().ToList();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task JsonDownload()
+    {
+        var options = new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+        };
+        await using var context = await DbFactory.CreateDbContextAsync();
+
+        var Models = new AllDataModel
+        {
+            Users = await context.Users.ToListAsync(),
+            Categories = await context.Categories.ToListAsync()
+        };
+        var jsonString = JsonSerializer.Serialize(Models, options);
+        var data = Encoding.UTF8.GetBytes(jsonString);
+
+        await JS.InvokeVoidAsync("jsSaveAsFile", "allData.json", Convert.ToBase64String(data));
+    }
+
+    private async Task UploadFiles(InputFileChangeEventArgs e)
+    {
+        var reader = new StreamReader(e.File.OpenReadStream());
+        var result = await reader.ReadToEndAsync();
+        reader.Dispose();
+        if (string.IsNullOrEmpty(result)) return;
+        await using var context = await DbFactory.CreateDbContextAsync();
+
+        var allData = JsonConvert.DeserializeObject<AllDataModel>(result);
+
+        if (allData == null) return;
+
+        await context.Users.AddRangeAsync(allData.Users);
+        await context.Categories.AddRangeAsync(allData.Categories);
+
+        await context.SaveChangesAsync();
+    }
+
+    private List<object> linkData = [];
+
+    private readonly BarConfig barConfig = new()
+    {
+        XField = "链接数量",
+        YField = "链接组",
+        Label = new BarViewConfigLabel
+        {
+            Visible = true
+        }
+    };
+
+}

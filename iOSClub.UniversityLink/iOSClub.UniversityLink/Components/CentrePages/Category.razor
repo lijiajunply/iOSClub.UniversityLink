@@ -1,10 +1,11 @@
 ﻿@page "/Category/{Key?}"
 @using global::UniversityLink.DataModels
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Newtonsoft.Json
 @inject IDbContextFactory<LinkContext> DbFactory
 @inject NavigationManager Nav
-@* @attribute[Authorize(Roles = "Founder,Manager")] *@
+@attribute [Authorize(Roles = "Founder,Manager")]
 
 <PageTitle>@(string.IsNullOrEmpty(Key) ? "全部链接" : Model.Name) - 建大Link</PageTitle>
 
@@ -132,7 +133,7 @@
 
     private void ShowLinkModal(LinkModel? link = null, string? key = null)
     {
-        if (link != null) Link = link;
+        Link = link ?? new LinkModel();
         if (!string.IsNullOrEmpty(key)) _categoryKey = key;
         _addLinkVisible = true;
     }
