@@ -103,7 +103,8 @@
         await provider.UpdateAuthState(userModel);
 
         await _message.Info("登陆成功!");
-        navigation.NavigateTo("/Centre", true);
+        navigation.NavigateTo(userModel.Identity is "Founder" or "Manager" 
+            ? "/Centre" : "/LinkIcon",true);
     }
 
     private void OnFinishFailed()

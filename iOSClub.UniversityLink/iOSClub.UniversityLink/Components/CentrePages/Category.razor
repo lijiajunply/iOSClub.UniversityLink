@@ -1,11 +1,9 @@
 ﻿@page "/Category/{Key?}"
 @using global::UniversityLink.DataModels
-@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Newtonsoft.Json
 @inject IDbContextFactory<LinkContext> DbFactory
 @inject NavigationManager Nav
-@attribute [Authorize(Roles = "Founder,Manager")]
 
 <PageTitle>@(string.IsNullOrEmpty(Key) ? "全部链接" : Model.Name) - 建大Link</PageTitle>
 
@@ -48,12 +46,14 @@
 </Modal>
 
 @code {
-
+    [CascadingParameter] public UserModel Member { get; set; } = new();
+    
     bool _addModelVisible;
     private Form<CategoryModel> _form = new();
 
     private void ShowModal()
     {
+        if(Member.Identity != "Founder" && Member.Identity != "Manager")return;
         _addModelVisible = true;
     }
 
@@ -64,6 +64,7 @@
 
     private async Task OnFinish()
     {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
         await using var context = await DbFactory.CreateDbContextAsync();
         if (string.IsNullOrEmpty(Model.Key))
         {
@@ -133,6 +134,7 @@
 
     private void ShowLinkModal(LinkModel? link = null, string? key = null)
     {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
         Link = link ?? new LinkModel();
         if (!string.IsNullOrEmpty(key)) _categoryKey = key;
         _addLinkVisible = true;
@@ -145,6 +147,7 @@
 
     private async Task LinkOnFinish()
     {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
         await using var context = await DbFactory.CreateDbContextAsync();
         var key = string.IsNullOrEmpty(Key) ? _categoryKey : Key;
         if (string.IsNullOrEmpty(key)) return;
@@ -332,6 +335,7 @@
 
     private async Task OnDrop(DragEventArgs e, CategoryModel s)
     {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
         if (string.IsNullOrEmpty(s.Key) || _categoryModel == null) return;
         await using var context = await DbFactory.CreateDbContextAsync();
         var index = Categories.IndexOf(s);
@@ -358,6 +362,7 @@
 
     private async Task Remove(LinkModel model)
     {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
         await using var context = await DbFactory.CreateDbContextAsync();
         context.Links.Remove(model);
         Model.Links.Remove(model);

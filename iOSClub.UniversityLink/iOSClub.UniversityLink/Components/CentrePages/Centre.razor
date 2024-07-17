@@ -1,73 +1,280 @@
 ﻿@page "/Centre"
+@using System.Text
+@using System.Text.Encodings.Web
+@using System.Text.Json
+@using System.Text.Unicode
 @using global::UniversityLink.DataModels
+@using iOSClub.UniversityLink.Models
 @using Microsoft.EntityFrameworkCore
+@using JsonSerializer = System.Text.Json.JsonSerializer
+@using Title = AntDesign.Charts.Title
+@using Newtonsoft.Json
 @inject IDbContextFactory<LinkContext> DbFactory
+@inject IJSRuntime JS
 
-<PageTitle>数据中心</PageTitle>
+<PageTitle>数据中心 - 建大Link</PageTitle>
 
-<Flex Justify="space-between" Align="center">
-    <Title>链接组</Title>
-    <Statistic GroupSeparator=" " Title="一共有" Value="@Categories.Count"
-               TValue="int" Class="desktop-phone">
-        <PrefixTemplate>
-            <IconFont Type="icon-shuju"/>
-        </PrefixTemplate>
-    </Statistic>
+<InputFile id="fileInput" OnChange="@UploadFiles" hidden multiple/>
+
+<Flex Justify="space-between" Style="margin: 20px">
+    <Title Level="2" Class="desktop-phone-flex">数据中心</Title>
+    <Space Size="@("large")">
+        <SpaceItem>
+            <Button Type="@("primary")" OnClick="JsonDownload">
+                下载数据
+            </Button>
+        </SpaceItem>
+        <SpaceItem>
+            <Upload Name="files">
+                <label class="ant-btn" for="fileInput">上传Json数据</label>
+            </Upload>
+        </SpaceItem>
+    </Space>
 </Flex>
 
-<Collapse Animation Bordered="false" Style="border-radius: 12px;overflow: hidden;">
-    @foreach (var category in Categories)
-    {
-        <Panel ShowArrow="false" Style="background-color: #ffffff;border: none">
-            <HeaderTemplate>
-                <Flex Gap="10">
-                    <IconFont Style="font-size: 40px" Type="@($"icon-{category.Icon}")"/>
-                    <Title Level="2">@category.Name</Title>
-                </Flex>
-                <Paragraph Type="secondary">@category.Description</Paragraph>
-            </HeaderTemplate>
-            <ChildContent>
-                @if (category.Links.Count == 0)
-                {
-                    <Empty Image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-                           Style="padding: 20px" Description="@("当前还未添加任何链接")"/>
-                }
-                <AntList DataSource="category.Links" Style="margin: 10px">
-                    <ChildContent>
-                        <ListItem>
-                            <ChildContent>
-                                <ListItemMeta>
-                                    <AvatarTemplate>
-                                        <IconFont Style="font-size: 42px" Type="@($"icon-{context.Icon}")"/>
-                                    </AvatarTemplate>
-                                    <TitleTemplate>
-                                        <h3>@context.Name</h3>
-                                        <a href="@context.Url" target="_blank">@context.Url</a>
-                                    </TitleTemplate>
-                                    <DescriptionTemplate>
-                                        <p>@context.Description</p>
-                                    </DescriptionTemplate>
-                                </ListItemMeta>
-                            </ChildContent>
-                        </ListItem>
-                    </ChildContent>
-                </AntList>
-            </ChildContent>
-        </Panel>
-    }
-</Collapse>
+<Modal Title="@("添加/更改链接组")"
+       @bind-Visible="@_addModelVisible"
+       OnOk="@HandleOk">
+    <Form Model="@Model"
+          OnFinish="OnFinish"
+          @ref="@_form">
+        <FormItem Label="名称">
+            <Input @bind-Value="@context.UserName"/>
+        </FormItem>
+        <FormItem Label="身份">
+            <Select @bind-Value="@context.Identity"
+                    DataSource="@UserModel.IdentityDictionary"
+                    ItemValue="c => c.Key"
+                    ItemLabel="c => c.Value">
+            </Select>
+        </FormItem>
+    </Form>
+</Modal>
 
 @code {
-    private List<CategoryModel> Categories = [];
+    [CascadingParameter] public UserModel Member { get; set; } = new();
+    bool _addModelVisible;
+    private Form<UserModel> _form = new();
+    private UserModel Model { get; set; } = new();
+
+    private void ShowModal(UserModel user)
+    {
+        _addModelVisible = true;
+        Model = user;
+    }
+
+    private void HandleOk()
+    {
+        _form.Submit();
+    }
+
+    private async Task OnFinish()
+    {
+        if (!string.IsNullOrEmpty(Model.UserId))
+        {
+            await using var context = await DbFactory.CreateDbContextAsync();
+            var user = await context.Users.FirstOrDefaultAsync(x => x.UserId == Model.UserId);
+            if (user != null)
+            {
+                user.UserName = Model.UserName;
+                user.Identity = Model.Identity;
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        _addModelVisible = false;
+    }
+
+}
+
+<div style="margin: 20px">
+    <Pie Data="userTotal" Config="pieConfig"/>
+
+    <AntList DataSource="@Users" TItem="UserModel">
+        <ListItem>
+            <ChildContent>
+                <ListItemMeta>
+                    <AvatarTemplate>
+                        <Avatar Style="background-color: #7265e6; vertical-align: middle;" Size="large">
+                            @context.UserName.First()
+                        </Avatar>
+                    </AvatarTemplate>
+                    <TitleTemplate>
+                        <h3>@context.UserName</h3>
+                    </TitleTemplate>
+                    <DescriptionTemplate>
+                        <p>@UserModel.IdentityDictionary[context.Identity]</p>
+                    </DescriptionTemplate>
+                </ListItemMeta>
+            </ChildContent>
+            <Extra>
+                @if (Member.Identity is "Founder" or "Manager")
+                {
+                    <Space Size="@("large")">
+                        <SpaceItem>
+                            <Button Type="@("primary")" OnClick="@(() => ShowModal(context))">
+                                编辑
+                            </Button>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Popconfirm Title="Are you sure delete this task?"
+                                        OnConfirm="@(() => Confirm(context))">
+                                <Button Danger Type="@ButtonType.Text">
+                                    删除
+                                </Button>
+                            </Popconfirm>
+                        </SpaceItem>
+                    </Space>
+                }
+            </Extra>
+        </ListItem>
+    </AntList>
+
+    <Divider/>
+
+    <Bar Data="linkData" Config="barConfig"/>
+
+    <Collapse Animation Bordered="false" Style="border-radius: 12px;overflow: hidden;">
+        @foreach (var category in Categories)
+        {
+            <Panel ShowArrow="false" Style="background-color: #ffffff;border: none">
+                <HeaderTemplate>
+                    <Flex Gap="10">
+                        <IconFont Style="font-size: 40px" Type="@($"icon-{category.Icon}")"/>
+                        <Title Level="2">@category.Name</Title>
+                    </Flex>
+                    <Paragraph Type="secondary">@category.Description</Paragraph>
+                </HeaderTemplate>
+                <ChildContent>
+                    @if (category.Links.Count == 0)
+                    {
+                        <Empty Image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+                               Style="padding: 20px" Description="@("当前还未添加任何链接")"/>
+                    }
+                    <AntList DataSource="category.Links" Style="margin: 10px">
+                        <ChildContent>
+                            <ListItem>
+                                <ChildContent>
+                                    <ListItemMeta>
+                                        <AvatarTemplate>
+                                            <IconFont Style="font-size: 42px" Type="@($"icon-{context.Icon}")"/>
+                                        </AvatarTemplate>
+                                        <TitleTemplate>
+                                            <h3>@context.Name</h3>
+                                            <a href="@context.Url" target="_blank">@context.Url</a>
+                                        </TitleTemplate>
+                                        <DescriptionTemplate>
+                                            <p>@context.Description</p>
+                                        </DescriptionTemplate>
+                                    </ListItemMeta>
+                                </ChildContent>
+                            </ListItem>
+                        </ChildContent>
+                    </AntList>
+                </ChildContent>
+            </Panel>
+        }
+    </Collapse>
+</div>
+
+@code {
+
+    private async Task Confirm(UserModel model)
+    {
+        await using var context = await DbFactory.CreateDbContextAsync();
+        var user = await context.Users.FirstOrDefaultAsync(x => x.UserId == model.UserId);
+        if (user == null) return;
+        context.Users.Remove(user);
+        await context.SaveChangesAsync();
+        Users.Remove(model);
+    }
+
+    private readonly List<object> userTotal = [];
+
+    private readonly PieConfig pieConfig = new()
+    {
+        Radius = 0.8,
+        AngleField = "value",
+        ColorField = "type",
+        Label = new PieLabelConfig
+        {
+            Visible = true,
+            Type = "inner"
+        }
+    };
+
+    private List<UserModel> Users { get; set; } = [];
+    private List<CategoryModel> Categories { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         await using var context = await DbFactory.CreateDbContextAsync();
+        Users = await context.Users.ToListAsync();
+        var value = Users.Count(x => x.Identity == "Founder");
+        if (value != 0) userTotal.Add(new { type = "创始者", value });
+        value = Users.Count(x => x.Identity == "Manager");
+        if (value != 0) userTotal.Add(new { type = "管理者", value });
+        value = Users.Count(x => x.Identity == "Member");
+        if (value != 0) userTotal.Add(new { type = "普通成员", value });
         Categories = await context.Categories
             .Include(x => x.Links)
             .OrderBy(x => x.Index)
             .ToListAsync();
+        linkData = Categories
+            .Select(x => new { 链接数量 = x.Links.Count, 链接组 = x.Name })
+            .OfType<object>().ToList();
+        await base.OnInitializedAsync();
     }
+
+    private async Task JsonDownload()
+    {
+        var options = new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+        };
+        await using var context = await DbFactory.CreateDbContextAsync();
+
+        var Models = new AllDataModel
+        {
+            Users = await context.Users.ToListAsync(),
+            Categories = await context.Categories.ToListAsync()
+        };
+        var jsonString = JsonSerializer.Serialize(Models, options);
+        var data = Encoding.UTF8.GetBytes(jsonString);
+
+        await JS.InvokeVoidAsync("jsSaveAsFile", "allData.json", Convert.ToBase64String(data));
+    }
+
+    private async Task UploadFiles(InputFileChangeEventArgs e)
+    {
+        var reader = new StreamReader(e.File.OpenReadStream());
+        var result = await reader.ReadToEndAsync();
+        reader.Dispose();
+        if (string.IsNullOrEmpty(result)) return;
+        await using var context = await DbFactory.CreateDbContextAsync();
+
+        var allData = JsonConvert.DeserializeObject<AllDataModel>(result);
+
+        if (allData == null) return;
+
+        await context.Users.AddRangeAsync(allData.Users);
+        await context.Categories.AddRangeAsync(allData.Categories);
+
+        await context.SaveChangesAsync();
+    }
+
+    private List<object> linkData = [];
+
+    private readonly BarConfig barConfig = new()
+    {
+        XField = "链接数量",
+        YField = "链接组",
+        Label = new BarViewConfigLabel
+        {
+            Visible = true
+        }
+    };
 
 }
 

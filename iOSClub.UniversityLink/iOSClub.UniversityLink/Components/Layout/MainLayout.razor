@@ -105,10 +105,9 @@
         Nav.Refresh();
     }
 
-    private void UserClick()
-    {
-        Nav.NavigateTo(string.IsNullOrEmpty(Member.UserId) ? "/Login" : "/Centre");
-    }
+    private void UserClick() =>
+        Nav.NavigateTo(string.IsNullOrEmpty(Member.UserId) ? "/Login" : 
+            Member.Identity is "Founder" or "Manager" ? "/Centre" : "/LinkIcon",true);
 }
 
 <style>
