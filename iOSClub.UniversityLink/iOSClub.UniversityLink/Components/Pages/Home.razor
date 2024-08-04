@@ -21,13 +21,13 @@
                         <Paragraph Type="secondary">@category.Description</Paragraph>
                     </TitleTemplate>
                     <ContextTemplate>
-                        <Flex Gap="10">
+                        <Flex Gap="small" Wrap="wrap">
                             @foreach (var link in category.Links)
                             {
                                 <a href="@link.Url" target="_blank" class="a-btn">
                                     <IconFont Style="font-size: 20px" Type="@($"icon-{link.Icon}")"/>
                                     <span style="color: #000000;font-size: 18px;font-weight: 500;">@link.Name</span>
-                                    <div style="color: #00000073;text-align: center">@link.Description</div>
+                                    <div style="color: #00000073;text-align: center" class="desktop-phone-flex">@link.Description</div>
                                 </a>
                             }
                         </Flex>
@@ -42,7 +42,7 @@
     <p class="Layout-Footer-Title">
         Copyright
         <Icon Type="copyright" Theme="outline"/>
-        2023 - 2024 XAUAT iOS Club
+        2024 XAUAT iOS Club
     </p>
     <div>
         <Space>
@@ -110,6 +110,12 @@
         margin-bottom: 45px;
     }
 
+    @@media screen and (max-width: 768px) {
+        .block {
+            width: 90%;
+        }
+    }
+    
     html, body {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         background-size: auto;

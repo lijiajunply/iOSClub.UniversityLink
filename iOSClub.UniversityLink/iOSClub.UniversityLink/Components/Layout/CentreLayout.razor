@@ -6,8 +6,10 @@
     <Context>
         @if (string.IsNullOrEmpty(Member.UserId))
         {
-            <Empty Image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-                   Style="padding: 20px" Description="@("这里空空如也")"/>
+            <Result Status="403"
+                    Title="未能找到当前页面"
+                    Style="padding: 20px"
+                    SubTitle="这里空空如也"/>
         }
         else
         {

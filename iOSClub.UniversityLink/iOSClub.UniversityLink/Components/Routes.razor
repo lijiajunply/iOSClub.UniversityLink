@@ -3,4 +3,13 @@
         <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)"/>
         <FocusOnNavigate RouteData="routeData" Selector="h1"/>
     </Found>
+    <NotFound>
+        <Result Status="404"
+                Title="404"
+                SubTitle="对不起，您访问的页面不存在">
+            <Extra>
+                <Button Type="primary">回到主页</Button>
+            </Extra>
+        </Result>
+    </NotFound>
 </Router>
