@@ -10,8 +10,10 @@ public class LinkController(LinkContext context) : ControllerBase
 {
     // GET: api/<LinkController>
     [HttpGet]
-    public async Task<ActionResult<List<LinkModel>>> Get()
+    public async Task<ActionResult<List<CategoryModel>>> Get()
     {
-        return await context.Links.ToListAsync();
+        return await context.Categories
+            .Include(x => x.Links)
+            .ToListAsync();
     }
 }

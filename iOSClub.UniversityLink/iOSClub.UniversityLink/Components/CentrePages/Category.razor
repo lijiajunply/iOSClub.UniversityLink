@@ -216,7 +216,7 @@
 }
 
 <Flex Justify="center" Align="center">
-    <GridRow Style="width: 80%" Gutter="(30, 24)">
+    <GridRow Class="block" Gutter="(30, 24)">
         @foreach (var category in Categories)
         {
             <GridCol Xs="24" Sm="24" Md="12" Lg="12" Xl="12" Xxl="12">
@@ -235,7 +235,7 @@
                                 <IconFont Style="font-size: 30px" Type="icon-bianji1"/>
                             </Button>
                         </Flex>
-                        <Flex Gap="10">
+                        <Flex Gap="10" Wrap="wrap">
                             @foreach (var link in category.Links)
                             {
                                 <a href="@link.Url" target="_blank" class="a-btn">
@@ -370,3 +370,15 @@
     }
 
 }
+
+<style>
+    .block{
+        width: 80%;
+    }
+    
+    @@media screen and (max-width: 768px) {
+        .block{
+            width: 90%;
+        }
+    }
+</style>
