@@ -258,8 +258,24 @@
 
         if (allData == null) return;
 
-        await context.Users.AddRangeAsync(allData.Users);
-        await context.Categories.AddRangeAsync(allData.Categories);
+        foreach (var user in allData.Users)
+        {
+            if (await context.Users.AnyAsync(x => x.UserId == user.UserId)) continue;
+            await context.Users.AddAsync(user);
+        }
+
+        foreach (var category in allData.Categories)
+        {
+            var categoryDb = await context.Categories.FirstOrDefaultAsync(x => x.Name == category.Name);
+            if (categoryDb != null)
+            {
+                categoryDb.Links.AddRange(category.Links);
+            }
+            else
+            {
+                await context.Categories.AddAsync(category);
+            }
+        }
 
         await context.SaveChangesAsync();
     }
