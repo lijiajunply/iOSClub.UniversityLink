@@ -3,7 +3,6 @@ using iOSClub.UniversityLink.Components;
 using iOSClub.UniversityLink.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using UniversityLink.DataModels;
@@ -18,7 +17,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddAntDesign();
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddScoped<AuthenticationStateProvider, Provider>();
 
 builder.Services.AddAuthentication(options => { options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
@@ -35,11 +33,10 @@ builder.Services.AddAuthentication(options => { options.DefaultScheme = JwtBeare
         };
     });
 
-builder.Services.AddSingleton(new JwtHelper(builder.Configuration));
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddScoped<TokenActionFilter>();
 builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
 
 var sql = Environment.GetEnvironmentVariable("SQL", EnvironmentVariableTarget.Process);
 if (string.IsNullOrEmpty(sql))
