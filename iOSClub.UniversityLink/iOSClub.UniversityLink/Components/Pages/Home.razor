@@ -10,9 +10,9 @@
         @for (var index = 0; index < Categories.Count; index++)
         {
             var category = Categories[index];
-            var i = index != Categories.Count - 1 ? index % 4 is 1 or 2 ? 15 : 9 : 24;
-            <GridCol Xs="24" Sm="24" Md="12" Lg="@i" Xl="@i" Xxl="@i">
-                <AppleCard>
+            var i = index != Categories.Count - 1 || Categories.Count % 2 == 0 ? index % 4 is 1 or 2 ? 15 : 9 : 24;
+            <GridCol Xs="24" Sm="24" Md="@(index != Categories.Count - 1 || Categories.Count % 2 == 0 ? 12 : 24)" Lg="@i" Xl="@i" Xxl="@i">
+                <AppleCard Style="height: 100%">
                     <TitleTemplate>
                         <Flex Gap="10">
                             <IconFont Style="font-size: 40px" Type="@($"icon-{category.Icon}")"/>
@@ -21,7 +21,7 @@
                         <Paragraph Type="secondary">@category.Description</Paragraph>
                     </TitleTemplate>
                     <ContextTemplate>
-                        <Flex Gap="small" Wrap="wrap">
+                        <Flex Gap="small" Wrap="wrap" Style="margin-bottom: 8px;">
                             @foreach (var link in category.Links)
                             {
                                 <a href="@link.Url" target="_blank" class="a-btn">
@@ -70,7 +70,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if(Categories.Count != 0)return;
+        if (Categories.Count != 0) return;
         await using var context = await DbFactory.CreateDbContextAsync();
         Categories = await context.Categories
             .Include(x => x.Links)
