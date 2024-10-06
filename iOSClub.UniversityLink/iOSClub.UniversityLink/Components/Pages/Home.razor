@@ -73,7 +73,7 @@
         if (Categories.Count != 0) return;
         await using var context = await DbFactory.CreateDbContextAsync();
         Categories = await context.Categories
-            .Include(x => x.Links)
+            .Include(x => x.Links.OrderBy(y => y.Index))
             .OrderBy(x => x.Index)
             .ToListAsync();
     }

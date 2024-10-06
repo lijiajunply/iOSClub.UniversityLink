@@ -69,7 +69,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<LinkContext>();
-    
+
     if (!context.Categories.Any())
     {
         var xauat = new CategoryModel() { Name = "建大生活", Description = "西建大校园网站", Icon = "fangyuan" };
@@ -100,7 +100,23 @@ using (var scope = app.Services.CreateScope())
             await context.SaveChangesAsync();
         }
     }
-    
+
+    if (context.Links.Any())
+    {
+        var c = await context.Categories
+            .Include(categoryModel => categoryModel.Links)
+            .ToListAsync();
+        foreach (var l in c.Select(item => item.Links))
+        {
+            for (var i = 0; i < l.Count; i++)
+            {
+                l[i].Index = i;
+            }
+        }
+
+        await context.SaveChangesAsync();
+    }
+
     context.Dispose();
 }
 

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UniversityLink.DataModels;
 
+[Index(nameof(Index))]
 public class LinkModel : DataModel
 {
     [Key]
@@ -11,9 +12,11 @@ public class LinkModel : DataModel
     public string Key { get; set; } = "";
 
     [Column(TypeName = "varchar(32)")] public string Name { get; set; } = "";
-    [Column(TypeName = "varchar(32)")] public string Icon { get; set; } = "";
+    [Column(TypeName = "varchar(32)")] public string? Icon { get; set; } = "";
     [Column(TypeName = "varchar(64)")] public string Url { get; set; } = "";
     [Column(TypeName = "varchar(32)")] public string? Description { get; set; } = "";
+    public bool IsQrCode { get; set; }
+    public int Index { get; set; }
 }
 
 [Index(nameof(Index))]
@@ -26,12 +29,11 @@ public class CategoryModel : DataModel
     [Column(TypeName = "varchar(32)")] public string Name { get; set; } = "";
     [Column(TypeName = "varchar(32)")] public string? Description { get; set; } = "";
     [Column(TypeName = "varchar(16)")] public string Icon { get; set; } = "";
-    
+
     public int Index { get; set; }
 
-    public List<LinkModel> Links { get; init; } = [];
+    public List<LinkModel> Links { get; set; } = [];
 }
-
 
 public class UserModel
 {
