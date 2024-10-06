@@ -1,10 +1,10 @@
-﻿@page "/Category/{Key?}"
+﻿@page "/Category"
 @using global::UniversityLink.DataModels
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<LinkContext> DbFactory
 @inject NavigationManager Nav
 
-<PageTitle>@(string.IsNullOrEmpty(Key) ? "全部链接" : Model.Name) - 建大Link</PageTitle>
+<PageTitle>全部链接 - 建大Link</PageTitle>
 
 <Modal Title="@("添加/更改链接组")"
        @bind-Visible="@_addModelVisible"
@@ -82,49 +82,19 @@
                 <Button Type="@ButtonType.Primary" OnClick="@(() => context.Icon = "")">清空</Button>
             </Flex>
         </FormItem>
-        <FormItem Label="链接">
-            <Input @bind-Value="@context.Url"/>
-        </FormItem>
     </Form>
 </Modal>
 
 <Flex Align="center" Justify="space-around" Style="width: 100%">
-    @if (!string.IsNullOrEmpty(Key))
-    {
-        <div>
-            <Flex Gap="10">
-                <IconFont Style="font-size: 40px"
-                          Type="@($"icon-{Model.Icon}")"/>
-                <Title Level="2">@Model.Name</Title>
-            </Flex>
-            <Paragraph Type="secondary">@Model.Description</Paragraph>
-        </div>
-
-        <Button Type="@ButtonType.Text" OnClick="ShowModal">
-            <IconFont Style="font-size: 22px" Type="icon-bianji1"/>
-        </Button>
-    }
-    else
-    {
-        <Flex Gap="10">
-            <IconFont Style="font-size: 40px"
-                      Type="icon--FileManager"/>
-            <Title Level="2">全部标签</Title>
-        </Flex>
-        <Button Type="@ButtonType.Text" OnClick="ShowModal">
-            <IconFont Style="font-size: 22px" Type="icon-tianjia"/>
-        </Button>
-    }
+    <Flex Gap="10">
+        <IconFont Style="font-size: 40px"
+                  Type="icon--FileManager"/>
+        <Title Level="2">全部标签</Title>
+    </Flex>
+    <Button Type="@ButtonType.Text" OnClick="ShowModal">
+        <IconFont Style="font-size: 22px" Type="icon-tianjia"/>
+    </Button>
 </Flex>
-
-@if (!string.IsNullOrEmpty(Key))
-{
-    <div style="text-align: right">
-        <Button Type="@ButtonType.Text" OnClick="() => ShowLinkModal()">
-            <IconFont Style="font-size: 22px" Type="icon-tianjia"/>
-        </Button>
-    </div>
-}
 
 <Flex Justify="center" Align="center">
     <GridRow Class="block" Gutter="(30, 24)">
@@ -142,7 +112,7 @@
                                 </Flex>
                                 <Paragraph Type="secondary">@category.Description</Paragraph>
                             </div>
-                            <Button Type="@ButtonType.Text" OnClick="@(() => Nav.NavigateTo($"/Category/{category.Key}", true))">
+                            <Button Type="@ButtonType.Text" OnClick="@(() => Nav.NavigateTo($"/Links/{category.Key}", true))">
                                 <IconFont Style="font-size: 30px" Type="icon-bianji1"/>
                             </Button>
                         </Flex>
@@ -171,46 +141,6 @@
         }
     </GridRow>
 </Flex>
-
-<AntList DataSource="Model.Links" Style="margin: 10px">
-    <ChildContent>
-        <div draggable="true" @ondrop="e => OnDrop(e, context)"
-             @ondragstart="e => OnDragStart(e, context)" ondragover="event.preventDefault()">
-            <ListItem>
-                <ChildContent>
-                    <ListItemMeta>
-                        <AvatarTemplate>
-                            <IconFont Style="font-size: 42px" Type="@($"icon-{context.Icon}")"/>
-                        </AvatarTemplate>
-                        <TitleTemplate>
-                            <h3>@context.Name</h3>
-                            <a href="@context.Url" target="_blank">@context.Url</a>
-                        </TitleTemplate>
-                        <DescriptionTemplate>
-                            <p>@context.Description</p>
-                        </DescriptionTemplate>
-                    </ListItemMeta>
-                </ChildContent>
-                <Extra>
-                    <Space>
-                        <Button type="@ButtonType.Link" OnClick="@(() => ShowLinkModal(context))">更改</Button>
-                        <Button type="@ButtonType.Text" Danger OnClick="@(() => Remove(context))">删除</Button>
-                    </Space>
-                </Extra>
-            </ListItem>
-        </div>
-    </ChildContent>
-</AntList>
-
-@if (!string.IsNullOrEmpty(Key) && Model.Links.Count == 0)
-{
-    <Empty Image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-           Style="padding: 20px" Description="@("当前还未添加任何链接")">
-        <ChildContent>
-            <Button type="@ButtonType.Primary" OnClick="@(() => ShowLinkModal())">添加一个</Button>
-        </ChildContent>
-    </Empty>
-}
 
 <style>
     .block{

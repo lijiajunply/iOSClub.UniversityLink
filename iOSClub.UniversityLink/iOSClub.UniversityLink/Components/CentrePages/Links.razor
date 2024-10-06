@@ -1,0 +1,294 @@
+﻿@page "/Links/{Key?}"
+@using global::UniversityLink.DataModels
+@using Microsoft.EntityFrameworkCore
+@using Newtonsoft.Json
+@inject IDbContextFactory<LinkContext> DbFactory
+
+<Modal Title="@("添加/更改链接组")"
+       @bind-Visible="@_addModelVisible"
+       OnOk="@HandleOk">
+    <Form Model="@Model"
+          OnFinish="OnFinish"
+          @ref="@_form">
+        <FormItem Label="名称">
+            <Input @bind-Value="@context.Name"/>
+        </FormItem>
+        <FormItem Label="描述">
+            <Input @bind-Value="@context.Description"/>
+        </FormItem>
+        <FormItem Label="图标">
+            <Select Mode="default"
+                    Placeholder="Please select"
+                    DataSource="@AllIcons"
+                    @bind-Value="@context.Icon"
+                    ItemValue="s => s.font_class"
+                    ItemLabel="s => s.name"
+                    TItemValue="string"
+                    TItem="IconModel"
+                    Context="model"
+                    ListboxStyle="display:flex;height: 200px;flex-flow: wrap; max-width: 500px; align-content: baseline;"
+                    Style="width: 100%; margin-top: 8px;">
+                <LabelTemplate>
+                    @model.name
+                </LabelTemplate>
+                <ItemTemplate Context="m">
+                    <IconFont Style="font-size: 32px" Type="@($"icon-{m.font_class}")"/>
+                </ItemTemplate>
+                <DropdownRender Context="m">
+                    @m
+                </DropdownRender>
+            </Select>
+        </FormItem>
+    </Form>
+</Modal>
+
+<Modal Title="@("添加/更改Link")"
+       @bind-Visible="@_addLinkVisible"
+       OnOk="@LinkHandleOk">
+    <Form Model="@Link"
+          OnFinish="LinkOnFinish"
+          @ref="@_linkForm">
+        <FormItem Label="名称">
+            <Input @bind-Value="@context.Name"/>
+        </FormItem>
+        <FormItem Label="描述">
+            <Input @bind-Value="@context.Description"/>
+        </FormItem>
+        <FormItem Label="链接">
+            <Input @bind-Value="@context.Url"/>
+        </FormItem>
+        <FormItem Label="图标">
+            <Flex>
+                <Select Mode="default"
+                        Placeholder="Please select"
+                        DataSource="@AllIcons"
+                        @bind-Value="@context.Icon"
+                        ItemValue="s => s.font_class"
+                        ItemLabel="s => s.name"
+                        Context="model"
+                        ListboxStyle="display:flex;height: 200px;flex-flow: wrap; max-width: 500px; align-content: baseline;">
+                    <LabelTemplate>
+                        @model.name
+                    </LabelTemplate>
+                    <ItemTemplate Context="m">
+                        <IconFont Style="font-size: 32px" Type="@($"icon-{m.font_class}")"/>
+                    </ItemTemplate>
+                    <DropdownRender Context="m">
+                        @m
+                    </DropdownRender>
+                </Select>
+                <Button Type="@ButtonType.Primary" OnClick="@(() => context.Icon = "")">清空</Button>
+            </Flex>
+        </FormItem>
+    </Form>
+</Modal>
+
+<Flex Align="center" Justify="space-around" Style="width: 100%">
+    <div>
+        <Flex Gap="10">
+            <IconFont Style="font-size: 40px"
+                      Type="@($"icon-{Model.Icon}")"/>
+            <Title Level="2">@Model.Name</Title>
+        </Flex>
+        <Paragraph Type="secondary">@Model.Description</Paragraph>
+    </div>
+
+    <Button Type="@ButtonType.Text" OnClick="ShowModal">
+        <IconFont Style="font-size: 22px" Type="icon-bianji1"/>
+    </Button>
+</Flex>
+
+<div style="text-align: right">
+    <Button Type="@ButtonType.Text" OnClick="() => ShowLinkModal()">
+        <IconFont Style="font-size: 22px" Type="icon-tianjia"/>
+    </Button>
+</div>
+
+<AntList DataSource="Model.Links" Style="margin: 10px">
+    <ChildContent>
+        <div draggable="true" @ondrop="e => OnDrop(e, context)"
+             @ondragstart="e => OnDragStart(e, context)" ondragover="event.preventDefault()">
+            <ListItem>
+                <ChildContent>
+                    <ListItemMeta>
+                        <AvatarTemplate>
+                            <IconFont Style="font-size: 42px" Type="@($"icon-{context.Icon}")"/>
+                        </AvatarTemplate>
+                        <TitleTemplate>
+                            <h3>@context.Name</h3>
+                            <a href="@context.Url" target="_blank">@context.Url</a>
+                        </TitleTemplate>
+                        <DescriptionTemplate>
+                            <p>@context.Description</p>
+                        </DescriptionTemplate>
+                    </ListItemMeta>
+                </ChildContent>
+                <Extra>
+                    <Space>
+                        <Button type="@ButtonType.Link" OnClick="@(() => ShowLinkModal(context))">更改</Button>
+                        <Button type="@ButtonType.Text" Danger OnClick="@(() => Remove(context))">删除</Button>
+                    </Space>
+                </Extra>
+            </ListItem>
+        </div>
+    </ChildContent>
+</AntList>
+
+@if (!string.IsNullOrEmpty(Key) && Model.Links.Count == 0)
+{
+    <Empty Image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+           Style="padding: 20px" Description="@("当前还未添加任何链接")">
+        <ChildContent>
+            <Button type="@ButtonType.Primary" OnClick="@(() => ShowLinkModal())">添加一个</Button>
+        </ChildContent>
+    </Empty>
+}
+
+@code{
+    [Parameter] public string Key { get; set; } = "";
+
+    private CategoryModel Model { get; set; } = new();
+    private IconModel[] AllIcons { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var json = await File.ReadAllTextAsync("wwwroot/iconfont.json");
+        AllIcons = JsonConvert.DeserializeObject<IconModel[]>(json) ?? [];
+        
+        await using var context = await DbFactory.CreateDbContextAsync();
+
+        var model = await context.Categories
+            .Include(x => x.Links.OrderBy(y => y.Index))
+            .FirstOrDefaultAsync(x => x.Key == Key);
+
+        if (model == null) return;
+
+        Model = model;
+        Console.WriteLine(Model.Icon);
+        
+        await base.OnInitializedAsync();
+    }
+
+    LinkModel? _link;
+
+    private async Task OnDrop(DragEventArgs e, LinkModel s)
+    {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
+        if (string.IsNullOrEmpty(s.Key) || _link == null) return;
+        await using var context = await DbFactory.CreateDbContextAsync();
+        var index = Model.Links.IndexOf(s);
+        if (index == -1) return;
+        var previous = await context.Links.FirstOrDefaultAsync(x => x.Key == _link.Key);
+        if (previous == null) return;
+        var next = await context.Links.FirstOrDefaultAsync(x => x.Key == s.Key);
+        if (next == null) return;
+        next.Index = _link.Index;
+        previous.Index = s.Index;
+        (s.Index, _link.Index) = (_link.Index, s.Index);
+        Model.Links = Model.Links.OrderBy(x => x.Index).ToList();
+        _link = null;
+        await context.SaveChangesAsync();
+        StateHasChanged();
+    }
+
+    private void OnDragStart(DragEventArgs e, LinkModel s)
+    {
+        e.DataTransfer.DropEffect = "move";
+        e.DataTransfer.EffectAllowed = "move";
+        _link = s;
+    }
+
+    private async Task Remove(LinkModel model)
+    {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
+        await using var context = await DbFactory.CreateDbContextAsync();
+        context.Links.Remove(model);
+        Model.Links.Remove(model);
+        await context.SaveChangesAsync();
+    }
+
+    bool _addLinkVisible;
+    private Form<LinkModel> _linkForm = new();
+    private LinkModel Link { get; set; } = new();
+    private string _categoryKey { get; set; } = "";
+
+    private void ShowLinkModal(LinkModel? link = null, string? key = null)
+    {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
+        Link = link ?? new LinkModel();
+        if (!string.IsNullOrEmpty(key)) _categoryKey = key;
+        _addLinkVisible = true;
+    }
+
+    private void LinkHandleOk()
+    {
+        _linkForm.Submit();
+    }
+
+    private async Task LinkOnFinish()
+    {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
+        await using var context = await DbFactory.CreateDbContextAsync();
+        var key = string.IsNullOrEmpty(Key) ? _categoryKey : Key;
+        if (string.IsNullOrEmpty(key)) return;
+        var category = await context.Categories.Include(x => x.Links)
+            .FirstOrDefaultAsync(x => x.Key == key);
+        if (category == null) return;
+        if (string.IsNullOrEmpty(Link.Key))
+        {
+            Link.Key = Link.ToString();
+            Link.Index = Model.Links.Count;
+            category.Links.Add(Link);
+            Model.Links.Add(Link);
+        }
+        else
+        {
+            var link = await context.Links.FirstOrDefaultAsync(x => x.Key == Link.Key);
+            if (link == null) return;
+            link.Name = Link.Name;
+            link.Description = Link.Description;
+            link.Url = Link.Url;
+            link.Icon = Link.Icon;
+        }
+
+        await context.SaveChangesAsync();
+        _addModelVisible = false;
+        _categoryKey = "";
+    }
+
+    [CascadingParameter] public UserModel Member { get; set; } = new();
+
+    bool _addModelVisible;
+    private Form<CategoryModel> _form = new();
+
+    private void ShowModal()
+    {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
+        _addModelVisible = true;
+    }
+
+    private void HandleOk()
+    {
+        _form.Submit();
+    }
+
+    private async Task OnFinish()
+    {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
+        await using var context = await DbFactory.CreateDbContextAsync();
+        if (string.IsNullOrEmpty(Model.Key))
+        {
+            return;
+        }
+
+        var category = await context.Categories.FirstOrDefaultAsync(x => x.Key == Model.Key);
+        if (category == null) return;
+        category.Name = Model.Name;
+        category.Description = Model.Description;
+        category.Icon = Model.Icon;
+
+        await context.SaveChangesAsync();
+        _addModelVisible = false;
+    }
+
+}

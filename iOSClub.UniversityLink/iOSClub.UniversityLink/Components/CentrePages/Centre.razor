@@ -268,7 +268,7 @@
 
         foreach (var category in allData.Categories)
         {
-            var categoryDb = await context.Categories.FirstOrDefaultAsync(x => x.Name == category.Name);
+            var categoryDb = await context.Categories.FirstOrDefaultAsync(x => x.Key == category.Key);
             if (categoryDb != null)
             {
                 categoryDb.Links.AddRange(category.Links);

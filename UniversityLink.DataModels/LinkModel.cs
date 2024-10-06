@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UniversityLink.DataModels;
 
-[Index(nameof(Index))]
 public class LinkModel : DataModel
 {
     [Key]

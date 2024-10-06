@@ -69,44 +69,6 @@ public partial class Category
         e.DataTransfer.EffectAllowed = "move";
         _categoryModel = s;
     }
-
-    LinkModel? _link;
-
-    private async Task OnDrop(DragEventArgs e, LinkModel s)
-    {
-        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
-        if (string.IsNullOrEmpty(s.Key) || _link == null) return;
-        await using var context = await DbFactory.CreateDbContextAsync();
-        var index = Model.Links.IndexOf(s);
-        if (index == -1) return;
-        var previous = await context.Links.FirstOrDefaultAsync(x => x.Key == _link.Key);
-        if (previous == null) return;
-        var next = await context.Links.FirstOrDefaultAsync(x => x.Key == s.Key);
-        if (next == null) return;
-        next.Index = _link.Index;
-        previous.Index = s.Index;
-        (s.Index, _link.Index) = (_link.Index, s.Index);
-        Model.Links = Model.Links.OrderBy(x => x.Index).ToList();
-        _link = null;
-        await context.SaveChangesAsync();
-        StateHasChanged();
-    }
-
-    private void OnDragStart(DragEventArgs e, LinkModel s)
-    {
-        e.DataTransfer.DropEffect = "move";
-        e.DataTransfer.EffectAllowed = "move";
-        _link = s;
-    }
-
-    private async Task Remove(LinkModel model)
-    {
-        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
-        await using var context = await DbFactory.CreateDbContextAsync();
-        context.Links.Remove(model);
-        Model.Links.Remove(model);
-        await context.SaveChangesAsync();
-    }
     
     bool _addLinkVisible;
     private Form<LinkModel> _linkForm = new();
