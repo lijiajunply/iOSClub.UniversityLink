@@ -10,8 +10,8 @@ using UniversityLink.DataModels;
 namespace UniversityLink.DataModels.Migrations
 {
     [DbContext(typeof(LinkContext))]
-    [Migration("20241006151426_AddItem")]
-    partial class AddItem
+    [Migration("20241006154850_addindex")]
+    partial class addindex
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -60,9 +60,6 @@ namespace UniversityLink.DataModels.Migrations
                         .HasColumnType("varchar(32)");
 
                     b.Property<int>("Index")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsQrCode")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")

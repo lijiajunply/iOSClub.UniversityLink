@@ -59,9 +59,6 @@ namespace UniversityLink.DataModels.Migrations
                     b.Property<int>("Index")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsQrCode")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(32)");

@@ -5,7 +5,7 @@
 namespace UniversityLink.DataModels.Migrations
 {
     /// <inheritdoc />
-    public partial class AddItem : Migration
+    public partial class addindex : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,13 +25,6 @@ namespace UniversityLink.DataModels.Migrations
                 nullable: false,
                 defaultValue: 0);
 
-            migrationBuilder.AddColumn<bool>(
-                name: "IsQrCode",
-                table: "Links",
-                type: "INTEGER",
-                nullable: false,
-                defaultValue: false);
-
             migrationBuilder.CreateIndex(
                 name: "IX_Links_Index",
                 table: "Links",
@@ -47,10 +40,6 @@ namespace UniversityLink.DataModels.Migrations
 
             migrationBuilder.DropColumn(
                 name: "Index",
-                table: "Links");
-
-            migrationBuilder.DropColumn(
-                name: "IsQrCode",
                 table: "Links");
 
             migrationBuilder.AlterColumn<string>(

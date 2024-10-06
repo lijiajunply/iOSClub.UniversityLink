@@ -15,7 +15,6 @@ public class LinkModel : DataModel
     [Column(TypeName = "varchar(32)")] public string? Icon { get; set; } = "";
     [Column(TypeName = "varchar(64)")] public string Url { get; set; } = "";
     [Column(TypeName = "varchar(32)")] public string? Description { get; set; } = "";
-    public bool IsQrCode { get; set; }
     public int Index { get; set; }
 }
 
