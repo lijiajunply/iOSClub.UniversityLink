@@ -96,6 +96,8 @@
     </Button>
 </Flex>
 
+<Divider/>
+
 <Flex Justify="center" Align="center">
     <GridRow Class="block" Gutter="(30, 24)">
         @foreach (var category in Categories)
@@ -120,9 +122,12 @@
                             @foreach (var link in category.Links)
                             {
                                 <a href="@link.Url" target="_blank" class="a-btn">
-                                    <IconFont Style="font-size: 20px" Type="@($"icon-{link.Icon}")"/>
-                                    <span style="color: #000000;font-size: 18px;font-weight: 500;">@link.Name</span>
-                                    <div style="color: #00000073;text-align: center">@link.Description</div>
+                                    @if (!string.IsNullOrEmpty(link.Icon))
+                                    {
+                                        <IconFont Class="btn-title" Type="@($"icon-{link.Icon}")"/>
+                                    }
+                                    <span class="btn-title" style="color: #000000;font-weight: 500;">@link.Name</span>
+                                    <div class="desktop-phone-flex btn-description">@link.Description</div>
                                 </a>
                             }
                         </Flex>

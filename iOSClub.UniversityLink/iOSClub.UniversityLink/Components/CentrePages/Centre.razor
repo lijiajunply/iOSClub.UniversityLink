@@ -268,9 +268,16 @@
 
         foreach (var category in allData.Categories)
         {
-            var categoryDb = await context.Categories.FirstOrDefaultAsync(x => x.Key == category.Key);
+            var categoryDb = await context.Categories
+                .Include(x => x.Links)
+                .FirstOrDefaultAsync(x => x.Name == category.Name);
             if (categoryDb != null)
             {
+                foreach (var model in category.Links)
+                {
+                    if (categoryDb.Links.Any(x => x.Key == model.Key)) continue;
+                    categoryDb.Links.Add(model);
+                }
                 categoryDb.Links.AddRange(category.Links);
             }
             else

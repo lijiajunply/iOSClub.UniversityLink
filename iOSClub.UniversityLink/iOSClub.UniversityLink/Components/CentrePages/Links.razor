@@ -1,7 +1,6 @@
 ﻿@page "/Links/{Key?}"
 @using global::UniversityLink.DataModels
 @using Microsoft.EntityFrameworkCore
-@using Newtonsoft.Json
 @inject IDbContextFactory<LinkContext> DbFactory
 
 <Modal Title="@("添加/更改链接组")"
@@ -83,13 +82,19 @@
     </Form>
 </Modal>
 
-<Flex Align="center" Justify="space-around" Style="width: 100%">
+<Modal Title="@("更改组")"
+       @bind-Visible="@_groupVisible"
+       OnOk="@GroupHandleOk">
+    <Select DataSource="@AllCategories"
+            @bind-Value="@_model"
+            ItemValue="s => s"
+            ItemLabel="s => s.Name">
+    </Select>
+</Modal>
+
+<Flex Align="center" Justify="space-between" Style="width: 100%">
     <div>
-        <Flex Gap="10">
-            <IconFont Style="font-size: 40px"
-                      Type="@($"icon-{Model.Icon}")"/>
-            <Title Level="2">@Model.Name</Title>
-        </Flex>
+        <Title Level="2">@Model.Name</Title>
         <Paragraph Type="secondary">@Model.Description</Paragraph>
     </div>
 
@@ -98,11 +103,15 @@
     </Button>
 </Flex>
 
-<div style="text-align: right">
+<Flex Align="center" Justify="space-between" Style="width: 100%">
+    <div>
+        <Title Level="4">链接组</Title>
+    </div>
+
     <Button Type="@ButtonType.Text" OnClick="() => ShowLinkModal()">
         <IconFont Style="font-size: 22px" Type="icon-tianjia"/>
     </Button>
-</div>
+</Flex>
 
 <AntList DataSource="Model.Links" Style="margin: 10px">
     <ChildContent>
@@ -125,8 +134,15 @@
                 </ChildContent>
                 <Extra>
                     <Space>
-                        <Button type="@ButtonType.Link" OnClick="@(() => ShowLinkModal(context))">更改</Button>
-                        <Button type="@ButtonType.Text" Danger OnClick="@(() => Remove(context))">删除</Button>
+                        <SpaceItem>
+                            <Button type="@ButtonType.Link" OnClick="@(() => ShowGroupModal(context))">更改组</Button>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Button type="@ButtonType.Link" OnClick="@(() => ShowLinkModal(context))">更改</Button>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Button type="@ButtonType.Text" Danger OnClick="@(() => Remove(context))">删除</Button>
+                        </SpaceItem>
                     </Space>
                 </Extra>
             </ListItem>
@@ -142,153 +158,4 @@
             <Button type="@ButtonType.Primary" OnClick="@(() => ShowLinkModal())">添加一个</Button>
         </ChildContent>
     </Empty>
-}
-
-@code{
-    [Parameter] public string Key { get; set; } = "";
-
-    private CategoryModel Model { get; set; } = new();
-    private IconModel[] AllIcons { get; set; } = [];
-
-    protected override async Task OnInitializedAsync()
-    {
-        var json = await File.ReadAllTextAsync("wwwroot/iconfont.json");
-        AllIcons = JsonConvert.DeserializeObject<IconModel[]>(json) ?? [];
-        
-        await using var context = await DbFactory.CreateDbContextAsync();
-
-        var model = await context.Categories
-            .Include(x => x.Links.OrderBy(y => y.Index))
-            .FirstOrDefaultAsync(x => x.Key == Key);
-
-        if (model == null) return;
-
-        Model = model;
-        Console.WriteLine(Model.Icon);
-        
-        await base.OnInitializedAsync();
-    }
-
-    LinkModel? _link;
-
-    private async Task OnDrop(DragEventArgs e, LinkModel s)
-    {
-        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
-        if (string.IsNullOrEmpty(s.Key) || _link == null) return;
-        await using var context = await DbFactory.CreateDbContextAsync();
-        var index = Model.Links.IndexOf(s);
-        if (index == -1) return;
-        var previous = await context.Links.FirstOrDefaultAsync(x => x.Key == _link.Key);
-        if (previous == null) return;
-        var next = await context.Links.FirstOrDefaultAsync(x => x.Key == s.Key);
-        if (next == null) return;
-        next.Index = _link.Index;
-        previous.Index = s.Index;
-        (s.Index, _link.Index) = (_link.Index, s.Index);
-        Model.Links = Model.Links.OrderBy(x => x.Index).ToList();
-        _link = null;
-        await context.SaveChangesAsync();
-        StateHasChanged();
-    }
-
-    private void OnDragStart(DragEventArgs e, LinkModel s)
-    {
-        e.DataTransfer.DropEffect = "move";
-        e.DataTransfer.EffectAllowed = "move";
-        _link = s;
-    }
-
-    private async Task Remove(LinkModel model)
-    {
-        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
-        await using var context = await DbFactory.CreateDbContextAsync();
-        context.Links.Remove(model);
-        Model.Links.Remove(model);
-        await context.SaveChangesAsync();
-    }
-
-    bool _addLinkVisible;
-    private Form<LinkModel> _linkForm = new();
-    private LinkModel Link { get; set; } = new();
-    private string _categoryKey { get; set; } = "";
-
-    private void ShowLinkModal(LinkModel? link = null, string? key = null)
-    {
-        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
-        Link = link ?? new LinkModel();
-        if (!string.IsNullOrEmpty(key)) _categoryKey = key;
-        _addLinkVisible = true;
-    }
-
-    private void LinkHandleOk()
-    {
-        _linkForm.Submit();
-    }
-
-    private async Task LinkOnFinish()
-    {
-        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
-        await using var context = await DbFactory.CreateDbContextAsync();
-        var key = string.IsNullOrEmpty(Key) ? _categoryKey : Key;
-        if (string.IsNullOrEmpty(key)) return;
-        var category = await context.Categories.Include(x => x.Links)
-            .FirstOrDefaultAsync(x => x.Key == key);
-        if (category == null) return;
-        if (string.IsNullOrEmpty(Link.Key))
-        {
-            Link.Key = Link.ToString();
-            Link.Index = Model.Links.Count;
-            category.Links.Add(Link);
-            Model.Links.Add(Link);
-        }
-        else
-        {
-            var link = await context.Links.FirstOrDefaultAsync(x => x.Key == Link.Key);
-            if (link == null) return;
-            link.Name = Link.Name;
-            link.Description = Link.Description;
-            link.Url = Link.Url;
-            link.Icon = Link.Icon;
-        }
-
-        await context.SaveChangesAsync();
-        _addModelVisible = false;
-        _categoryKey = "";
-    }
-
-    [CascadingParameter] public UserModel Member { get; set; } = new();
-
-    bool _addModelVisible;
-    private Form<CategoryModel> _form = new();
-
-    private void ShowModal()
-    {
-        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
-        _addModelVisible = true;
-    }
-
-    private void HandleOk()
-    {
-        _form.Submit();
-    }
-
-    private async Task OnFinish()
-    {
-        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
-        await using var context = await DbFactory.CreateDbContextAsync();
-        if (string.IsNullOrEmpty(Model.Key))
-        {
-            return;
-        }
-
-        var category = await context.Categories.FirstOrDefaultAsync(x => x.Key == Model.Key);
-        if (category == null) return;
-        category.Name = Model.Name;
-        category.Description = Model.Description;
-        category.Icon = Model.Icon;
-
-        await context.SaveChangesAsync();
-        _addModelVisible = false;
-    }
-
 }

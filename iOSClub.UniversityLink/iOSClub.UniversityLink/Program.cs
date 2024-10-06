@@ -70,52 +70,36 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<LinkContext>();
 
-    if (!context.Categories.Any())
-    {
-        var xauat = new CategoryModel() { Name = "建大生活", Description = "西建大校园网站", Icon = "fangyuan" };
-        var ios = new CategoryModel()
-        {
-            Name = "社团出品", Description = "iOS Club 出品的App",
-            Icon = "pingguo"
-        };
-        var other = new CategoryModel() { Name = "其他", Description = "其他资源", Icon = "gengduo1" };
-        var recommend = new CategoryModel() { Name = "校友推荐", Description = "推荐资源", Icon = "shoucang2" };
-        var test = new CategoryModel() { Name = "考试学习", Description = "考试和学习资料", Icon = "wodexuexi" };
-        var neighborhood = new CategoryModel() { Name = "校园周边", Description = "建大周边", Icon = "jiejiarifanxiao" };
-        var tool = new CategoryModel { Name = "在线工具", Description = "在线工具", Icon = "gongju" };
-        xauat.Key = xauat.ToString();
-        ios.Key = ios.ToString();
-        other.Key = other.ToString();
-        recommend.Key = recommend.ToString();
-        neighborhood.Key = neighborhood.ToString();
-        tool.Key = tool.ToString();
-        test.Key = test.ToString();
-        var list = new List<CategoryModel>()
-            { xauat, test, neighborhood, recommend, ios, tool, other };
-        for (var i = 0; i < list.Count; i++)
-        {
-            var model = list[i];
-            model.Index = i;
-            await context.Categories.AddAsync(model);
-            await context.SaveChangesAsync();
-        }
-    }
-
-    if (context.Links.Any())
-    {
-        var c = await context.Categories
-            .Include(categoryModel => categoryModel.Links)
-            .ToListAsync();
-        foreach (var l in c.Select(item => item.Links))
-        {
-            for (var i = 0; i < l.Count; i++)
-            {
-                l[i].Index = i;
-            }
-        }
-
-        await context.SaveChangesAsync();
-    }
+    // if (!context.Categories.Any())
+    // {
+    //     var xauat = new CategoryModel() { Name = "建大生活", Description = "西建大校园网站", Icon = "fangyuan" };
+    //     var ios = new CategoryModel()
+    //     {
+    //         Name = "社团出品", Description = "iOS Club 出品的App",
+    //         Icon = "pingguo"
+    //     };
+    //     var other = new CategoryModel() { Name = "其他", Description = "其他资源", Icon = "gengduo1" };
+    //     var recommend = new CategoryModel() { Name = "校友推荐", Description = "推荐资源", Icon = "shoucang2" };
+    //     var test = new CategoryModel() { Name = "考试学习", Description = "考试和学习资料", Icon = "wodexuexi" };
+    //     var neighborhood = new CategoryModel() { Name = "校园周边", Description = "建大周边", Icon = "jiejiarifanxiao" };
+    //     var tool = new CategoryModel { Name = "在线工具", Description = "在线工具", Icon = "gongju" };
+    //     xauat.Key = xauat.ToString();
+    //     ios.Key = ios.ToString();
+    //     other.Key = other.ToString();
+    //     recommend.Key = recommend.ToString();
+    //     neighborhood.Key = neighborhood.ToString();
+    //     tool.Key = tool.ToString();
+    //     test.Key = test.ToString();
+    //     var list = new List<CategoryModel>()
+    //         { xauat, test, neighborhood, recommend, ios, tool, other };
+    //     for (var i = 0; i < list.Count; i++)
+    //     {
+    //         var model = list[i];
+    //         model.Index = i;
+    //         await context.Categories.AddAsync(model);
+    //         await context.SaveChangesAsync();
+    //     }
+    // }
 
     context.Dispose();
 }

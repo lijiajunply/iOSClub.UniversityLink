@@ -25,9 +25,12 @@
                             @foreach (var link in category.Links)
                             {
                                 <a href="@link.Url" target="_blank" class="a-btn">
-                                    <IconFont Style="font-size: 20px" Type="@($"icon-{link.Icon}")"/>
-                                    <span style="color: #000000;font-size: 18px;font-weight: 500;">@link.Name</span>
-                                    <div style="color: #00000073;text-align: center" class="desktop-phone-flex">@link.Description</div>
+                                    @if (!string.IsNullOrEmpty(link.Icon))
+                                    {
+                                        <IconFont Class="btn-title" Type="@($"icon-{link.Icon}")"/>
+                                    }
+                                    <span class="btn-title" style="color: #000000;font-weight: 500;">@link.Name</span>
+                                    <div class="desktop-phone-flex btn-description">@link.Description</div>
                                 </a>
                             }
                         </Flex>
@@ -114,13 +117,6 @@
         .block {
             width: 90%;
         }
-    }
-    
-    html, body {
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        background-size: auto;
-        background-repeat: no-repeat;
-        background-position: initial;
     }
 
     ::-webkit-scrollbar {
