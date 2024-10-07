@@ -265,6 +265,8 @@
             if (await context.Users.AnyAsync(x => x.UserId == user.UserId)) continue;
             await context.Users.AddAsync(user);
         }
+        
+        await context.SaveChangesAsync();
 
         foreach (var category in allData.Categories)
         {
@@ -275,18 +277,17 @@
             {
                 foreach (var model in category.Links)
                 {
+                    Console.WriteLine(model.Key);
                     if (categoryDb.Links.Any(x => x.Key == model.Key)) continue;
                     categoryDb.Links.Add(model);
                 }
-                categoryDb.Links.AddRange(category.Links);
             }
             else
             {
                 await context.Categories.AddAsync(category);
             }
+            await context.SaveChangesAsync();
         }
-
-        await context.SaveChangesAsync();
     }
 
     private List<object> linkData = [];

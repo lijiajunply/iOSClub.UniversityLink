@@ -28,23 +28,40 @@
                             {
                                 @if (!isWeixin && link.Description == "微信打开")
                                 {
-                                    <a @onclick="() => QrCodeModalOpen(link)" target="_blank" class="a-btn">
-                                        @if (!string.IsNullOrEmpty(link.Icon))
-                                        {
-                                            <IconFont Class="btn-title" Type="@($"icon-{link.Icon}")"/>
-                                        }
-                                        <span class="btn-title" style="color: #000000;">@link.Name</span>
+                                    <a @onclick="() => QrCodeModalOpen(link)" target="_blank"
+                                       style="margin: 5px 5px 0 0;"
+                                       class="a-btn"
+                                       title="@link.Description">
+                                        <div style="text-align: center">
+                                            @if (!string.IsNullOrEmpty(link.Icon))
+                                            {
+                                                <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
+                                                <div class="btn-description">@link.Name</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="btn-title">@link.Name</div>
+                                            }
+                                        </div>
                                     </a>
                                 }
                                 else
                                 {
-                                    <a href="@link.Url" target="_blank" class="a-btn">
-                                        @if (!string.IsNullOrEmpty(link.Icon))
-                                        {
-                                            <IconFont Class="btn-title" Type="@($"icon-{link.Icon}")"/>
-                                        }
-                                        <span class="btn-title" style="color: #000000;">@link.Name</span>
-                                        <div class="desktop-phone-flex btn-description">@link.Description</div>
+                                    <a href="@link.Url" target="_blank"
+                                       style="margin: 5px 5px 0 0;"
+                                       class="a-btn"
+                                       title="@link.Description">
+                                        <div style="text-align: center">
+                                            @if (!string.IsNullOrEmpty(link.Icon))
+                                            {
+                                                <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
+                                                <div class="btn-description">@link.Name</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="btn-title">@link.Name</div>
+                                            }
+                                        </div>
                                     </a>
                                 }
                             }
@@ -86,7 +103,6 @@
 {
     private List<CategoryModel> Categories { get; set; } = [];
     private bool isWeixin;
-    private LinkModel _selectedLink = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,7 +113,7 @@
             .OrderBy(x => x.Index)
             .ToListAsync();
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
@@ -105,9 +121,10 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private  async Task QrCodeModalOpen(LinkModel link)
+    private async Task QrCodeModalOpen(LinkModel link)
     {
-        await _modalService.CreateConfirmAsync<ConfirmTemplate, LinkModel,LinkModel>(new ConfirmOptions(){},link);
+        await _modalService.CreateConfirmAsync<ConfirmTemplate, LinkModel, LinkModel>
+            (new ConfirmOptions() { OkCancel = false }, link);
     }
 }
 
