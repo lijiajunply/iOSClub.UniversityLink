@@ -159,20 +159,21 @@ body {
     font-size: calc(2rem + 1vw); /* 初始字体大小为2rem，随着视口宽度增加线性增加 */
 }
 
-@media (max-width: 600px) {
+@media screen and (max-width: 600px) {
     body {
         font-size: calc(1rem + 1.5vw); /* 在小屏幕上，字体大小以不同的比例减小 */
     }
 }
 
-@media (min-width: 1200px) {
+@media screen and (max-width: 1199px) {
     body {
         font-size: calc(1.5rem + 0.5vw); /* 在大屏幕上，字体大小以更小的比例减小 */
     }
 }
 
 .btn-title {
-    font-size: 1.2em
+    font-size: 1.2em;
+    font-weight: 400;
 }
 
 .btn-description {

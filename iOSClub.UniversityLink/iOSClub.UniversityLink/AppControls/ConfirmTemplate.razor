@@ -1,0 +1,30 @@
+﻿@using global::UniversityLink.DataModels
+@using AntDesign
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@inherits AntDesign.FeedbackComponent<LinkModel,LinkModel>
+
+<Flex Gap="10">
+    <IconFont Style="font-size: 40px" Type="@($"icon-{_selectedLink.Icon}")"/>
+    <Title Level="2">@_selectedLink.Name</Title>
+</Flex>
+<p class="btn-title">请使用微信扫码打开</p>
+<Flex Justify="center" Align="center">
+    <div id="qrcode"></div>
+</Flex>
+
+@code {
+    LinkModel _selectedLink = new();
+    protected override void OnInitialized()
+    {
+        _selectedLink = Options;
+        base.OnInitialized();
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(!firstRender)return;
+        await JS.InvokeVoidAsync("makeCode", _selectedLink.Url);
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

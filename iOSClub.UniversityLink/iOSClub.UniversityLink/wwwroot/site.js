@@ -21,3 +21,18 @@ window.localStorageHelper = {
         localStorage.clear();
     }
 };
+
+function isWeiXin() {
+    const ua = navigator.userAgent
+    return !!/MicroMessenger/i.test(ua)
+}
+
+function makeCode (text) {
+    let a =document.getElementById("qrcode")
+    a.innerHTML = ""
+    const qrcode = new QRCode(a, {
+        width : 150,
+        height : 150
+    });
+    qrcode.makeCode(text);
+}
