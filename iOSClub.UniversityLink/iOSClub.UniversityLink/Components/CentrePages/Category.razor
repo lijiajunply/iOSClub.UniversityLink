@@ -121,13 +121,21 @@
                         <Flex Gap="10" Wrap="wrap">
                             @foreach (var link in category.Links)
                             {
-                                <a href="@link.Url" target="_blank" class="a-btn">
-                                    @if (!string.IsNullOrEmpty(link.Icon))
-                                    {
-                                        <IconFont Class="btn-title" Type="@($"icon-{link.Icon}")"/>
-                                    }
-                                    <span class="btn-title" style="color: #000000;font-weight: 500;">@link.Name</span>
-                                    <div class="desktop-phone-flex btn-description">@link.Description</div>
+                                <a href="@link.Url" target="_blank"
+                                   style="margin: 5px 5px 0 0;"
+                                   class="a-btn"
+                                   title="@link.Description">
+                                    <div style="text-align: center">
+                                        @if (!string.IsNullOrEmpty(link.Icon))
+                                        {
+                                            <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
+                                            <div class="btn-description">@link.Name</div>
+                                        }
+                                        else
+                                        {
+                                            <div class="btn-title">@link.Name</div>
+                                        }
+                                    </div>
                                 </a>
                             }
                         </Flex>

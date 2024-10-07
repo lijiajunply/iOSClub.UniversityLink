@@ -24,11 +24,14 @@
                 下载数据
             </Button>
         </SpaceItem>
-        <SpaceItem>
-            <Upload Name="files">
-                <label class="ant-btn" for="fileInput">上传Json数据</label>
-            </Upload>
-        </SpaceItem>
+        @if (Member.Identity is "Founder" or "Manager")
+        {
+            <SpaceItem>
+                <Upload Name="files">
+                    <label class="ant-btn" for="fileInput">上传Json数据</label>
+                </Upload>
+            </SpaceItem>
+        }
     </Space>
 </Flex>
 
@@ -229,11 +232,37 @@
 
     private async Task JsonDownload()
     {
+        await using var context = await DbFactory.CreateDbContextAsync();
+        if (Member.Identity is "Member")
+        {
+            var c = await context.Categories
+                .Include(x => x.Links.OrderBy(y => y.Index))
+                .OrderBy(x => x.Index)
+                .ToListAsync();
+        
+            var builder = new StringBuilder();
+            foreach (var model in c)
+            {
+                builder.AppendLine($"## {model.Name}");
+                builder.AppendLine("");
+                builder.AppendLine(model.Description);
+                builder.AppendLine("");
+                foreach (var link in model.Links)
+                {
+                    builder.AppendLine($"- [{link.Name}]({link.Url} \"{link.Description}\")");
+                }
+                builder.AppendLine("");
+            }
+            
+            await JS.InvokeVoidAsync("jsSaveAsFile", "link.md", 
+                Convert.ToBase64String(Encoding.UTF8.GetBytes(builder.ToString())));
+            return;
+        }
+
         var options = new JsonSerializerOptions
         {
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
         };
-        await using var context = await DbFactory.CreateDbContextAsync();
 
         var Models = new AllDataModel
         {
@@ -277,8 +306,16 @@
             {
                 foreach (var model in category.Links)
                 {
-                    Console.WriteLine(model.Key);
-                    if (categoryDb.Links.Any(x => x.Key == model.Key)) continue;
+                    var modelDb = await context.Links.FirstOrDefaultAsync(x => x.Key == model.Key);
+                    if (modelDb != null)
+                    {
+                        modelDb.Description = model.Description;
+                        modelDb.Url = model.Url;
+                        modelDb.Name = model.Name;
+                        modelDb.Icon = model.Icon;
+                        modelDb.Index = model.Index;
+                        continue;
+                    }
                     categoryDb.Links.Add(model);
                 }
             }
