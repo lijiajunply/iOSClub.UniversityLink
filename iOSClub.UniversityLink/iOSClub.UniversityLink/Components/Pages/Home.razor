@@ -129,7 +129,8 @@
             (new ConfirmOptions() { OkCancel = false }, link);
     }
 
-    private string GetIcon(string url) => $"{url.Replace("https://", "").Replace("http://", "").Split('/').First()}/favicon.ico";
+    private string GetIcon(string url) 
+        => $"https://{url.Replace("https://", "").Replace("http://", "").Split('/').First()}/favicon.ico";
 }
 
 <style>

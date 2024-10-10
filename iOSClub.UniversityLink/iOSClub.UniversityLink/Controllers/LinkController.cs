@@ -1,4 +1,3 @@
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversityLink.DataModels;
@@ -17,35 +16,20 @@ public class LinkController(LinkContext context) : ControllerBase
             .Include(x => x.Links)
             .ToListAsync();
     }
-    
+
     [HttpGet]
     public async Task<ActionResult<List<LinkModel>>> GetLink()
     {
         return await context.Links.ToListAsync();
     }
-    
-    [HttpGet]
-    public async Task<ActionResult<string>> GetMd()
+
+    [HttpGet("{name}")]
+    public async Task<ActionResult<CategoryModel>> GetCategory(string name)
     {
-        var c = await context.Categories
-            .Include(x => x.Links.OrderBy(y => y.Index))
-            .OrderBy(x => x.Index)
-            .ToListAsync();
-        
-        var builder = new StringBuilder();
-        foreach (var model in c)
-        {
-            builder.AppendLine($"## {model.Name}");
-            builder.AppendLine("");
-            builder.AppendLine(model.Description);
-            builder.AppendLine("");
-            foreach (var link in model.Links)
-            {
-                builder.AppendLine($"- [{link.Name}]({link.Url} \"{link.Description}\")");
-            }
-            builder.AppendLine("");
-        }
-        
-        return builder.ToString();
+        var a = await context.Categories
+            .Include(x => x.Links)
+            .FirstOrDefaultAsync(x => x.Name == name);
+        if (a == null) return NotFound();
+        return a;
     }
 }
