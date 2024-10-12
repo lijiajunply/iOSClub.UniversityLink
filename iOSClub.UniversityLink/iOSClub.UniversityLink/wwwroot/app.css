@@ -135,11 +135,6 @@ a, .btn-link {
     border-radius: 12px !important;
 }
 
-.a-btn{
-    background-color: #fff;
-    border-radius: 10px;
-}
-
 .a-btn {
     display: inline-block;
     transition: .2s;
