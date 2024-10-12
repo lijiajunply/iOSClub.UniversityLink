@@ -5,15 +5,14 @@
 @inject IJSRuntime JS
 @inject ModalService _modalService
 
-<PageTitle>建大Link - 西建大iOS Club</PageTitle>
-
 <Flex Justify="center" Align="center">
     <GridRow Class="block" Gutter="(30, 24)">
         @for (var index = 0; index < Categories.Count; index++)
         {
             var category = Categories[index];
             var i = index != Categories.Count - 1 || Categories.Count % 2 == 0 ? index % 4 is 1 or 2 ? 15 : 9 : 24;
-            <GridCol Xs="24" Sm="24" Md="@(index != Categories.Count - 1 || Categories.Count % 2 == 0 ? 12 : 24)" Lg="@i" Xl="@i" Xxl="@i">
+            <GridCol Xs="24" Sm="24" Md="@(index != Categories.Count - 1 || Categories.Count % 2 == 0 ? 12 : 24)" Lg="@i"
+                     Xl="@i" Xxl="@i">
                 <AppleCard Style="height: 100%">
                     <TitleTemplate>
                         <Flex Gap="10">
@@ -87,14 +86,14 @@
                 <Divider Type="DirectionVHType.Vertical"/>
             </Split>
             <ChildContent>
-                <SpaceItem Class="desktop-phone-flex">
-                    <a href="https://cn.xauat.edu.cn/" target="_blank">西安建筑科技大学</a>
+                <SpaceItem Class="desktop-phone-flex a">
+                    <a class="a" href="https://cn.xauat.edu.cn/" target="_blank">西安建筑科技大学 <Icon Type="link" Theme="outline"/></a>
                 </SpaceItem>
-                <SpaceItem>
-                    <a href="https://beian.miit.gov.cn/" target="_blank">备案号 陕ICP备2024031872号</a>
+                <SpaceItem Class="a">
+                    <a class="a" href="https://beian.miit.gov.cn/" target="_blank">备案号 陕ICP备2024031872号 <Icon Type="link" Theme="outline"/></a>
                 </SpaceItem>
-                <SpaceItem Class="desktop-phone-flex">
-                    <a href="https://gitee.com/XAUATiOSClub" target="_blank">我们的Gitee组织</a>
+                <SpaceItem Class="desktop-phone-flex a">
+                    <a class="a" href="https://gitee.com/XAUATiOSClub" target="_blank">我们的Gitee组织 <Icon Type="link" Theme="outline"/></a>
                 </SpaceItem>
             </ChildContent>
         </Space>
@@ -129,7 +128,7 @@
             (new ConfirmOptions() { OkCancel = false }, link);
     }
 
-    private string GetIcon(string url) 
+    private string GetIcon(string url)
         => $"https://{url.Replace("https://", "").Replace("http://", "").Split('/').First()}/favicon.ico";
 }
 
@@ -172,5 +171,18 @@
 
     ::-webkit-scrollbar {
         display: none;
+    }
+
+    .a {
+        color: #f3f5f7;
+        transition: .2s;
+        text-decoration: none;
+        background: linear-gradient(#07f2,#07f2) no-repeat center bottom / 100% 0;
+    }
+    
+    .a:hover{
+        color: #f3f5f7;
+        background: linear-gradient(#07f2,#07f2) no-repeat center bottom / 100% 100%;
+        border-radius: .2em;
     }
 </style>

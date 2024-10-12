@@ -27,26 +27,20 @@
         border-radius: 20px;
         min-height: 300px;
         max-height: 100%;
+        transition: .2s;
         background-color: #fff;
     }
 
     .apple-card:hover {
         box-shadow: 0 0 10px #C0C0C0;
-        animation: CardDisplay 0.2s ease;
         transform: scale(1.02);
-        transition: box-shadow 0.3s, border-color 0.3s;
+        transition: box-shadow 0.3s, border-color 0.3s, transform 0.2s;
     }
 
     @@media screen and (max-width: 768px) {  
-        .apple-card:hover {
-            box-shadow: 0 0 !important;
-            animation: CardDisplay 0.2s ease;
+        .apple-card:active {
             transform: scale(0.98);
         }
-    }
-
-    .apple-card:not(:hover) {
-        animation: CardDisplay2 0.2s ease;
     }
 
     .apple-card .apple-card-header {

@@ -28,4 +28,9 @@
       <Folder Include="Controllers\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\ThemePages\AppTheme.razor" />
+      <_ContentIncludedByDefault Remove="Components\ThemePages\MarkdownTheme.razor" />
+    </ItemGroup>
+
 </Project>
