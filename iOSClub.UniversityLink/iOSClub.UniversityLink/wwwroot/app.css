@@ -6,34 +6,6 @@ a, .btn-link {
     color: #0071c1;
 }
 
-@keyframes fade-in {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* 半透明 */
-
-.container {
-    background: rgba(255, 255, 255, 0.3);
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
-
-    padding: 10px;
-    margin-bottom: 10px;
-    margin-top: 10px;
-    border-radius: 10px;
-
-    animation: fade-in 1s ease-in-out;
-}
-
 .desktop-phone {
     display: block !important;
 }
@@ -49,15 +21,9 @@ a, .btn-link {
 .phone-desktop {
     display: none !important;
 }
-
-.desktop-laptop {
-    display: block;
-}
-
 /* 手机页面调整 */
 
 @media screen and (max-width: 768px) {
-
     .container {
         border-radius: 0;
     }
@@ -76,22 +42,6 @@ a, .btn-link {
 
     .phone-desktop-flex {
         display: flex !important;
-    }
-
-    @keyframes CardDisplay {
-        0% {
-            transform: scale(1)
-        }
-
-        100% {
-            transform: scale(0.98)
-        }
-    }
-}
-
-@media screen and (max-width: 1199px) {
-    .desktop-laptop {
-        display: none !important;
     }
 }
 
@@ -120,22 +70,6 @@ a, .btn-link {
 .a-btn:hover {
     transform: scale(1.02);
     border-color: #1890ff;
-}
-
-html {
-    font-size: calc(1rem); /* 初始字体大小为2rem，随着视口宽度增加线性增加 */
-}
-
-@media screen and (max-width: 600px) {
-    html {
-        font-size: calc(1rem + 1.5vw); /* 在小屏幕上，字体大小以不同的比例减小 */
-    }
-}
-
-@media screen and (max-width: 1199px) {
-    html {
-        font-size: calc(1.5rem + 0.5vw); /* 在大屏幕上，字体大小以更小的比例减小 */
-    }
 }
 
 .btn-title {

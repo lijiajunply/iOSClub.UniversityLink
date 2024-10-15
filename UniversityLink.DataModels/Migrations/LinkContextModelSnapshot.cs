@@ -39,7 +39,7 @@ namespace UniversityLink.DataModels.Migrations
 
                     b.HasIndex("Index");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("UniversityLink.DataModels.LinkModel", b =>
@@ -73,7 +73,7 @@ namespace UniversityLink.DataModels.Migrations
 
                     b.HasIndex("Index");
 
-                    b.ToTable("Links");
+                    b.ToTable("Links", (string)null);
                 });
 
             modelBuilder.Entity("UniversityLink.DataModels.UserModel", b =>
@@ -99,7 +99,7 @@ namespace UniversityLink.DataModels.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("UniversityLink.DataModels.LinkModel", b =>

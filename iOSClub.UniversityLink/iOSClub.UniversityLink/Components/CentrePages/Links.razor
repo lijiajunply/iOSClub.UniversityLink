@@ -78,6 +78,7 @@
                 </Select>
                 <Button Type="@ButtonType.Primary" OnClick="@(() => context.Icon = "")">清空</Button>
             </Flex>
+            <Input @bind-Value="@context.Icon" Placeholder="或者也可以输入网址"/>
         </FormItem>
     </Form>
 </Modal>

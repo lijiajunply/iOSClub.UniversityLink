@@ -34,13 +34,21 @@
                                         <div style="text-align: center">
                                             @if (!string.IsNullOrEmpty(link.Icon))
                                             {
-                                                <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
-                                                <div class="btn-description">@link.Name</div>
+                                                if (link.Icon.StartsWith("http"))
+                                                {
+                                                    <img alt="" src="@link.Icon"/>
+                                                    <div class="btn-description">@link.Name</div>
+                                                }
+                                                else
+                                                {
+                                                    <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
+                                                    <div class="btn-description">@link.Name</div>
+                                                }
                                             }
                                             else
                                             {
                                                 <img alt="" src="@GetIcon(link.Url)"/>
-                                                <div class="btn-title">@link.Name</div>
+                                                <div class="btn-description">@link.Name</div>
                                             }
                                         </div>
                                     </a>
@@ -54,13 +62,21 @@
                                         <div style="text-align: center">
                                             @if (!string.IsNullOrEmpty(link.Icon))
                                             {
-                                                <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
-                                                <div class="btn-description">@link.Name</div>
+                                                if (link.Icon.StartsWith("http"))
+                                                {
+                                                    <img alt="" src="@link.Icon"/>
+                                                    <div class="btn-description">@link.Name</div>
+                                                }
+                                                else
+                                                {
+                                                    <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
+                                                    <div class="btn-description">@link.Name</div>
+                                                }
                                             }
                                             else
                                             {
                                                 <img alt="" src="@GetIcon(link.Url)"/>
-                                                <div class="btn-title">@link.Name</div>
+                                                <div class="btn-description">@link.Name</div>
                                             }
                                         </div>
                                     </a>
@@ -78,7 +94,7 @@
     <p class="Layout-Footer-Title">
         Copyright
         <Icon Type="copyright" Theme="outline"/>
-        2024 XAUAT iOS Club
+        2024 iOS Club of XAUAT
     </p>
     <div>
         <Space>
