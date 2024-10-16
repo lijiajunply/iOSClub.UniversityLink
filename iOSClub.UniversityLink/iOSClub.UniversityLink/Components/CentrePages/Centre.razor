@@ -137,48 +137,6 @@
     <Divider/>
 
     <Bar Data="linkData" Config="barConfig"/>
-
-    <Collapse Animation Bordered="false" Style="border-radius: 12px;overflow: hidden;">
-        @foreach (var category in Categories)
-        {
-            <Panel ShowArrow="false" Style="background-color: #ffffff;border: none">
-                <HeaderTemplate>
-                    <Flex Gap="10">
-                        <IconFont Style="font-size: 40px" Type="@($"icon-{category.Icon}")"/>
-                        <Title Level="2">@category.Name</Title>
-                    </Flex>
-                    <Paragraph Type="secondary">@category.Description</Paragraph>
-                </HeaderTemplate>
-                <ChildContent>
-                    @if (category.Links.Count == 0)
-                    {
-                        <Empty Image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-                               Style="padding: 20px" Description="@("当前还未添加任何链接")"/>
-                    }
-                    <AntList DataSource="category.Links" Style="margin: 10px">
-                        <ChildContent>
-                            <ListItem>
-                                <ChildContent>
-                                    <ListItemMeta>
-                                        <AvatarTemplate>
-                                            <IconFont Style="font-size: 42px" Type="@($"icon-{context.Icon}")"/>
-                                        </AvatarTemplate>
-                                        <TitleTemplate>
-                                            <h3>@context.Name</h3>
-                                            <a href="@context.Url" target="_blank">@context.Url</a>
-                                        </TitleTemplate>
-                                        <DescriptionTemplate>
-                                            <p>@context.Description</p>
-                                        </DescriptionTemplate>
-                                    </ListItemMeta>
-                                </ChildContent>
-                            </ListItem>
-                        </ChildContent>
-                    </AntList>
-                </ChildContent>
-            </Panel>
-        }
-    </Collapse>
 </div>
 
 @code {
@@ -208,7 +166,6 @@
     };
 
     private List<UserModel> Users { get; set; } = [];
-    private List<CategoryModel> Categories { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -220,13 +177,12 @@
         if (value != 0) userTotal.Add(new { type = "管理者", value });
         value = Users.Count(x => x.Identity == "Member");
         if (value != 0) userTotal.Add(new { type = "普通成员", value });
-        Categories = await context.Categories
+
+        linkData = await context.Categories
             .Include(x => x.Links)
             .OrderBy(x => x.Index)
-            .ToListAsync();
-        linkData = Categories
             .Select(x => new { 链接数量 = x.Links.Count, 链接组 = x.Name })
-            .OfType<object>().ToList();
+            .OfType<object>().ToListAsync();
         await base.OnInitializedAsync();
     }
 
@@ -239,7 +195,7 @@
                 .Include(x => x.Links.OrderBy(y => y.Index))
                 .OrderBy(x => x.Index)
                 .ToListAsync();
-        
+
             var builder = new StringBuilder();
             foreach (var model in c)
             {
@@ -251,10 +207,11 @@
                 {
                     builder.AppendLine($"- [{link.Name}]({link.Url} \"{link.Description}\")");
                 }
+
                 builder.AppendLine("");
             }
-            
-            await JS.InvokeVoidAsync("jsSaveAsFile", "link.md", 
+
+            await JS.InvokeVoidAsync("jsSaveAsFile", "link.md",
                 Convert.ToBase64String(Encoding.UTF8.GetBytes(builder.ToString())));
             return;
         }
@@ -294,7 +251,7 @@
             if (await context.Users.AnyAsync(x => x.UserId == user.UserId)) continue;
             await context.Users.AddAsync(user);
         }
-        
+
         await context.SaveChangesAsync();
 
         foreach (var category in allData.Categories)
@@ -316,6 +273,7 @@
                         modelDb.Index = model.Index;
                         continue;
                     }
+
                     categoryDb.Links.Add(model);
                 }
             }
@@ -323,6 +281,7 @@
             {
                 await context.Categories.AddAsync(category);
             }
+
             await context.SaveChangesAsync();
         }
     }
@@ -340,9 +299,3 @@
     };
 
 }
-
-<style>
-    .ant-collapse-header{
-        background-color: #f2f5f5
-    }
-</style>
