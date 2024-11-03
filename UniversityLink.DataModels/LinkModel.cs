@@ -56,7 +56,8 @@ public class UserModel
     {
         ["Founder"] = "创始人",
         ["Manager"] = "管理员",
-        ["Member"] = "普通成员"
+        ["Member"] = "普通成员",
+        ["Department"] = ""
     };
 }
 

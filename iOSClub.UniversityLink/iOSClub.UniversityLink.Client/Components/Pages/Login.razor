@@ -88,11 +88,12 @@
                 return;
             }
 
-            if (userModel.Identity.Contains("Minister"))
-                userModel.Identity = "Manager";
-
-            if (userModel.Identity == "President")
-                userModel.Identity = "Founder";
+            userModel.Identity = userModel.Identity switch
+            {
+                "Minister" => "Manager",
+                "President" => "Founder",
+                _ => "Member"
+            };
             context.Users.Add(userModel);
             await context.SaveChangesAsync();
         }
