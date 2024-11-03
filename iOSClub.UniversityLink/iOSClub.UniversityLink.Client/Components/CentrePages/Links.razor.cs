@@ -83,12 +83,18 @@ public partial class Links
     private LinkModel Link { get; set; } = new();
     private string _categoryKey { get; set; } = "";
 
-    private void ShowLinkModal(LinkModel? link = null, string? key = null)
+    private void ShowLinkModal(LinkModel? link = null)
     {
         if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
         Link = link ?? new LinkModel();
-        if (!string.IsNullOrEmpty(key)) _categoryKey = key;
         _addLinkVisible = true;
+    }
+
+    private void ShowIconModal(LinkModel? link = null)
+    {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
+        Link = link ?? new LinkModel();
+        _iconVisible = true;
     }
 
     private void LinkHandleOk()
@@ -195,4 +201,33 @@ public partial class Links
 
         _groupVisible = false;
     }
+    
+    private Form<LinkModel> _iconForm = new();
+    private bool _iconVisible;
+    private void IconHandleOk()
+    {
+        _iconForm.Submit();
+    }
+    
+    private async Task IconOnFinish()
+    {
+        if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
+        await using var context = await DbFactory.CreateDbContextAsync();
+        var key = string.IsNullOrEmpty(Key) ? _categoryKey : Key;
+        if (string.IsNullOrEmpty(key)) return;
+        
+        if (!string.IsNullOrEmpty(Link.Key))
+        {
+            var link = await context.Links.FirstOrDefaultAsync(x => x.Key == Link.Key);
+            if (link == null) return;
+            link.Icon = Link.Icon;
+        }
+
+        await context.SaveChangesAsync();
+        _addModelVisible = false;
+        _categoryKey = "";
+    }
+    
+    private string GetIcon(string url)
+        => $"https://{url.Replace("https://", "").Replace("http://", "").Split('/').First()}/favicon.ico";
 }

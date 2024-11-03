@@ -41,6 +41,18 @@
     </Form>
 </Modal>
 
+<Modal Title="@("更改图标")"
+       @bind-Visible="@_iconVisible"
+       OnOk="@IconHandleOk">
+    <Form Model="@Link"
+          OnFinish="IconOnFinish"
+          @ref="@_iconForm">
+        <FormItem Label="名称">
+            <Input @bind-Value="@context.Icon"/>
+        </FormItem>
+    </Form>
+</Modal>
+
 <Modal Title="@("添加/更改Link")"
        @bind-Visible="@_addLinkVisible"
        OnOk="@LinkHandleOk">
@@ -122,7 +134,23 @@
                 <ChildContent>
                     <ListItemMeta>
                         <AvatarTemplate>
-                            <IconFont Style="font-size: 42px" Type="@($"icon-{context.Icon}")"/>
+                            <div style="text-align: center">
+                                @if (!string.IsNullOrEmpty(context.Icon))
+                                {
+                                    if (context.Icon.StartsWith("http"))
+                                    {
+                                        <img alt="" src="@context.Icon" style="height: 42px;width: 42px;border-radius: 4px"/>
+                                    }
+                                    else
+                                    {
+                                        <IconFont Style="font-size: 42px" Type="@($"icon-{context.Icon}")"/>
+                                    }
+                                }
+                                else
+                                {
+                                    <img alt="" src="@GetIcon(context.Url)" style="height: 42px;width: 42px;border-radius: 4px"/>
+                                }
+                            </div>
                         </AvatarTemplate>
                         <TitleTemplate>
                             <h3>@context.Name</h3>
@@ -135,6 +163,9 @@
                 </ChildContent>
                 <Extra>
                     <Space>
+                        <SpaceItem>
+                            <Button type="@ButtonType.Link" OnClick="@(() => ShowIconModal(context))">更改图片Url</Button>
+                        </SpaceItem>
                         <SpaceItem>
                             <Button type="@ButtonType.Link" OnClick="@(() => ShowGroupModal(context))">更改组</Button>
                         </SpaceItem>

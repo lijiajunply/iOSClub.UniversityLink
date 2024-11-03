@@ -69,7 +69,7 @@ public partial class Category
         e.DataTransfer.EffectAllowed = "move";
         _categoryModel = s;
     }
-    
+
     bool _addLinkVisible;
     private Form<LinkModel> _linkForm = new();
     private LinkModel Link { get; set; } = new();
@@ -117,10 +117,13 @@ public partial class Category
         _addModelVisible = false;
         _categoryKey = "";
     }
-    
+
+    private string GetIcon(string url)
+        => $"https://{url.Replace("https://", "").Replace("http://", "").Split('/').First()}/favicon.ico";
+
     [CascadingParameter] public UserModel Member { get; set; } = new();
 
-    bool _addModelVisible;
+    private bool _addModelVisible;
     private Form<CategoryModel> _form = new();
 
     private void ShowModal()
@@ -156,5 +159,4 @@ public partial class Category
         await context.SaveChangesAsync();
         _addModelVisible = false;
     }
-
 }

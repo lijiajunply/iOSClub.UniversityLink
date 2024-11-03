@@ -128,12 +128,21 @@
                                     <div style="text-align: center">
                                         @if (!string.IsNullOrEmpty(link.Icon))
                                         {
-                                            <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
-                                            <div class="btn-description">@link.Name</div>
+                                            if (link.Icon.StartsWith("http"))
+                                            {
+                                                <img alt="" src="@link.Icon" style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                <div class="btn-description">@link.Name</div>
+                                            }
+                                            else
+                                            {
+                                                <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
+                                                <div class="btn-description">@link.Name</div>
+                                            }
                                         }
                                         else
                                         {
-                                            <div class="btn-title">@link.Name</div>
+                                            <img alt="" src="@GetIcon(link.Url)" style="height: 40px;width: 40px;border-radius: 4px"/>
+                                            <div class="btn-description">@link.Name</div>
                                         }
                                     </div>
                                 </a>

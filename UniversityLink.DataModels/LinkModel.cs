@@ -11,7 +11,7 @@ public class LinkModel : DataModel
     public string Key { get; set; } = "";
 
     [Column(TypeName = "varchar(32)")] public string Name { get; set; } = "";
-    [Column(TypeName = "varchar(32)")] public string? Icon { get; set; } = "";
+    [Column(TypeName = "varchar(512)")] public string? Icon { get; set; } = "";
     [Column(TypeName = "varchar(64)")] public string Url { get; set; } = "";
     [Column(TypeName = "varchar(32)")] public string? Description { get; set; } = "";
     public int Index { get; set; }
@@ -26,7 +26,7 @@ public class CategoryModel : DataModel
 
     [Column(TypeName = "varchar(32)")] public string Name { get; set; } = "";
     [Column(TypeName = "varchar(32)")] public string? Description { get; set; } = "";
-    [Column(TypeName = "varchar(16)")] public string Icon { get; set; } = "";
+    [Column(TypeName = "varchar(32)")] public string Icon { get; set; } = "";
 
     public int Index { get; set; }
 
