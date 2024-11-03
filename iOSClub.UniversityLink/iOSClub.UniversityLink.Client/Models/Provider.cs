@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.JSInterop;
 using UniversityLink.DataModels;
 
-namespace iOSClub.UniversityLink.Models;
+namespace iOSClub.UniversityLink.Client.Models;
 
 public static class ProviderExtensions
 {

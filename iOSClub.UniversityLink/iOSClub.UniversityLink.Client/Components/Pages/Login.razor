@@ -1,15 +1,14 @@
 ﻿@page "/Login"
 @using System.Net.Http.Headers
 @using global::UniversityLink.DataModels
-@using iOSClub.UniversityLink.Models
+@using iOSClub.UniversityLink.Client.Models
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Components.Authorization
 @using Newtonsoft.Json
 @inject IMessageService _message
 @inject IDbContextFactory<LinkContext> DbFactory
 @inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navigation
-@inject IHttpClientFactory HttpClientFactory
+@inject HttpClient Client
 
 <PageTitle>登录到您的iMember - 建大导航</PageTitle>
 
@@ -64,8 +63,7 @@
 
         if (userModel == null)
         {
-            using var client = HttpClientFactory.CreateClient();
-            var response = await client.PostAsJsonAsync("https://www.xauat.site/api/Member/Login", Model);
+            var response = await Client.PostAsJsonAsync("https://www.xauat.site/api/Member/Login", Model);
             if (!response.IsSuccessStatusCode)
             {
                 await _message.Info("用户账号密码出错!");
@@ -73,8 +71,8 @@
             }
 
             var Jwt = await response.Content.ReadAsStringAsync();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Jwt);
-            response = await client.GetAsync("https://www.xauat.site/api/Member/GetData");
+            Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Jwt);
+            response = await Client.GetAsync("https://www.xauat.site/api/Member/GetData");
 
             if (!response.IsSuccessStatusCode)
             {

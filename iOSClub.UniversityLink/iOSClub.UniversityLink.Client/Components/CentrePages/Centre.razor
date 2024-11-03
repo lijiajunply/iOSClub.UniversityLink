@@ -4,7 +4,7 @@
 @using System.Text.Json
 @using System.Text.Unicode
 @using global::UniversityLink.DataModels
-@using iOSClub.UniversityLink.Models
+@using iOSClub.UniversityLink.Client.Models
 @using Microsoft.EntityFrameworkCore
 @using JsonSerializer = System.Text.Json.JsonSerializer
 @using Title = AntDesign.Charts.Title
@@ -112,7 +112,7 @@
                 </ListItemMeta>
             </ChildContent>
             <Extra>
-                @if (Member.Identity is "Founder" or "Manager")
+                @if (Member.Identity is "Founder")
                 {
                     <Space Size="@("large")">
                         <SpaceItem>

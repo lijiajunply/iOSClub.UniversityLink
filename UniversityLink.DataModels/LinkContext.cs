@@ -19,17 +19,11 @@ public sealed class LinkContext : DbContext
         {
             Console.WriteLine(e.Message);
         }
-        finally
-        {
-            Links = Set<LinkModel>();
-            Categories = Set<CategoryModel>();
-            Users = Set<UserModel>();
-        }
     }
 
     public DbSet<LinkModel> Links { get; init; }
     public DbSet<CategoryModel> Categories { get; init; }
-    public  DbSet<UserModel> Users { get; init; }
+    public DbSet<UserModel> Users { get; init; }
 }
 
 public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<LinkContext>

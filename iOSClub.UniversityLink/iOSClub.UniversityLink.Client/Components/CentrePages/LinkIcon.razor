@@ -1,7 +1,6 @@
 ﻿@page "/LinkIcon"
 @using global::UniversityLink.DataModels
 @using Newtonsoft.Json
-@inject IHttpClientFactory HttpClientFactory
 
 <Flex Justify="center" Gap="10" Align="center">
     <Space>
@@ -48,8 +47,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        using var httpClient = HttpClientFactory.CreateClient();
-
         var json = await File.ReadAllTextAsync("wwwroot/iconfont.json");
         AllIcons = JsonConvert.DeserializeObject<IconModel[]>(json) ?? [];
         IconModels = AllIcons;

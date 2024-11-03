@@ -4,34 +4,34 @@
 
 <PageView Style="height: 100%;overflow: auto" ContextStyle="height: 80%;">
     <Context>
-        <AuthorizeView>
-            <Authorized>
-                <GridRow>
-                    <GridCol Md="4" Lg="4" Xl="4" Xxl="4" Class="desktop-phone">
-                        <Button Type="@ButtonType.Text" OnClick="ToggleCollapsed" Style="@("margin-bottom: 16px;width: " + (collapsed ? "79px" : "100%"))">
-                            @if (collapsed)
-                            {
-                                <Icon Type="double-right" Theme="outline"/>
-                            }
-                            else
-                            {
-                                <Icon Type="double-left" Theme="outline"/>
-                            }
-                        </Button>
-                        @Menu
-                    </GridCol>
-                    <GridCol Xs="24" Sm="24" Md="20" Lg="20" Xl="20" Xxl="20" Style="padding: 10px">
-                        @Body
-                    </GridCol>
-                </GridRow>
-            </Authorized>
-            <NotAuthorized>
-                <Result Status="403"
-                        Title="未能找到当前页面"
-                        Style="padding: 20px"
-                        SubTitle="这里空空如也"/>
-            </NotAuthorized>
-        </AuthorizeView>
+        @if (string.IsNullOrEmpty(Member.UserId))
+        {
+            <Result Status="403"
+                    Title="未能找到当前页面"
+                    Style="padding: 20px"
+                    SubTitle="这里空空如也"/>
+        }
+        else
+        {
+            <GridRow>
+                <GridCol Md="4" Lg="4" Xl="4" Xxl="4" Class="desktop-phone">
+                    <Button Type="@ButtonType.Text" OnClick="ToggleCollapsed" Style="@("margin-bottom: 16px;width: " + (collapsed ? "79px" : "100%"))">
+                        @if (collapsed)
+                        {
+                            <Icon Type="double-right" Theme="outline"/>
+                        }
+                        else
+                        {
+                            <Icon Type="double-left" Theme="outline"/>
+                        }
+                    </Button>
+                    @Menu
+                </GridCol>
+                <GridCol Xs="24" Sm="24" Md="20" Lg="20" Xl="20" Xxl="20" Style="padding: 10px">
+                    @Body
+                </GridCol>
+            </GridRow>
+        }
     </Context>
     <Extra>
         <Button Type="@ButtonType.Text" Class="phone-desktop" OnClick="@(() => { _drawerVisible = true; collapsed = false; })">

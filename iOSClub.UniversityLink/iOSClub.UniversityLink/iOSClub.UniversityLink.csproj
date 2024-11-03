@@ -8,14 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AntDesign.Charts" Version="0.5.5" />
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <ProjectReference Include="..\..\UniversityLink.DataModels\UniversityLink.DataModels.csproj" />
         <ProjectReference Include="..\iOSClub.UniversityLink.Client\iOSClub.UniversityLink.Client.csproj" />
-        <PackageReference Include="AntDesign" Version="0.19.4" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.10" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,6 +29,22 @@
     <ItemGroup>
       <_ContentIncludedByDefault Remove="Components\ThemePages\AppTheme.razor" />
       <_ContentIncludedByDefault Remove="Components\ThemePages\MarkdownTheme.razor" />
+      <_ContentIncludedByDefault Remove="AppControls\AppleCard.razor" />
+      <_ContentIncludedByDefault Remove="AppControls\ConfirmTemplate.razor" />
+      <_ContentIncludedByDefault Remove="AppControls\PageView.razor" />
+      <_ContentIncludedByDefault Remove="Components\App.razor" />
+      <_ContentIncludedByDefault Remove="Components\CentrePages\Category.razor" />
+      <_ContentIncludedByDefault Remove="Components\CentrePages\Centre.razor" />
+      <_ContentIncludedByDefault Remove="Components\CentrePages\LinkIcon.razor" />
+      <_ContentIncludedByDefault Remove="Components\CentrePages\Links.razor" />
+      <_ContentIncludedByDefault Remove="Components\CentrePages\_Imports.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\CentreLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Home.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Login.razor" />
+      <_ContentIncludedByDefault Remove="Components\Routes.razor" />
+      <_ContentIncludedByDefault Remove="Components\_Imports.razor" />
     </ItemGroup>
 
 </Project>

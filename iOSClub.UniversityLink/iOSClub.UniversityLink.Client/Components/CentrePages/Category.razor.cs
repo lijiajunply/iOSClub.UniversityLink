@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using UniversityLink.DataModels;
 
-namespace iOSClub.UniversityLink.Components.CentrePages;
+namespace iOSClub.UniversityLink.Client.Components.CentrePages;
 
 public partial class Category
 {

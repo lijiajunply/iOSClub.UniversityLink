@@ -13,12 +13,6 @@
                 The content you submitted has the following error:
             </Text>
         </Paragraph>
-        @if (ShowRequestId)
-        {
-            <p>
-                <strong>Request ID:</strong> <code>@RequestId</code>
-            </p>
-        }
         <Paragraph>
             <Icon Type="close-circle" Theme="Outline" Class="site-result-demo-error-icon"/> Your account has been frozen
             <a>Thaw immediately &gt;</a>
@@ -29,14 +23,3 @@
         </Paragraph>
     </div>
 </Result>
-
-@code{
-    [CascadingParameter] private HttpContext? HttpContext { get; set; }
-
-    private string? RequestId { get; set; }
-    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-
-    protected override void OnInitialized() =>
-        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
-
-}

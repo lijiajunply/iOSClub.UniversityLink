@@ -1,6 +1,6 @@
 using System.Text;
-using iOSClub.UniversityLink.Components;
-using iOSClub.UniversityLink.Models;
+using iOSClub.UniversityLink;
+using iOSClub.UniversityLink.Client.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -33,10 +33,7 @@ builder.Services.AddAuthentication(options => { options.DefaultScheme = JwtBeare
         };
     });
 
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
-builder.Services.AddCascadingAuthenticationState();
 
 var sql = Environment.GetEnvironmentVariable("SQL", EnvironmentVariableTarget.Process);
 if (string.IsNullOrEmpty(sql))
