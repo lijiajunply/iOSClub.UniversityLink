@@ -17,7 +17,7 @@ namespace UniversityLink.DataModels.Migrations
                     Key = table.Column<string>(type: "varchar(32)", nullable: false),
                     Name = table.Column<string>(type: "varchar(32)", nullable: false),
                     Description = table.Column<string>(type: "varchar(32)", nullable: true),
-                    Icon = table.Column<string>(type: "varchar(16)", nullable: false),
+                    Icon = table.Column<string>(type: "varchar(32)", nullable: false),
                     Index = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -46,9 +46,10 @@ namespace UniversityLink.DataModels.Migrations
                 {
                     Key = table.Column<string>(type: "varchar(32)", nullable: false),
                     Name = table.Column<string>(type: "varchar(32)", nullable: false),
-                    Icon = table.Column<string>(type: "varchar(16)", nullable: false),
+                    Icon = table.Column<string>(type: "varchar(512)", nullable: true),
                     Url = table.Column<string>(type: "varchar(64)", nullable: false),
                     Description = table.Column<string>(type: "varchar(32)", nullable: true),
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
                     CategoryModelKey = table.Column<string>(type: "varchar(32)", nullable: true)
                 },
                 constraints: table =>

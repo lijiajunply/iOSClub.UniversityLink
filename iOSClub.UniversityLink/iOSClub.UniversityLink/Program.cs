@@ -97,16 +97,16 @@ using (var scope = app.Services.CreateScope())
     //         await context.SaveChangesAsync();
     //     }
     // }
-    
-    if(context.Users.Any())
-    {
-        var list = await context.Users.Where(x => x.Identity == "Department").ToListAsync();
-        foreach (var item in list)
-        {
-            item.Identity = "Member";
-            await context.SaveChangesAsync();
-        }
-    }
+
+    // if(context.Users.Any())
+    // {
+    //     var list = await context.Users.Where(x => x.Identity == "Department").ToListAsync();
+    //     foreach (var item in list)
+    //     {
+    //         item.Identity = "Member";
+    //         await context.SaveChangesAsync();
+    //     }
+    // }
 
     context.Dispose();
 }

@@ -10,8 +10,8 @@ using UniversityLink.DataModels;
 namespace UniversityLink.DataModels.Migrations
 {
     [DbContext(typeof(LinkContext))]
-    [Migration("20241006154850_addindex")]
-    partial class addindex
+    [Migration("20241104050933_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,7 +29,7 @@ namespace UniversityLink.DataModels.Migrations
 
                     b.Property<string>("Icon")
                         .IsRequired()
-                        .HasColumnType("varchar(16)");
+                        .HasColumnType("varchar(32)");
 
                     b.Property<int>("Index")
                         .HasColumnType("INTEGER");
@@ -57,7 +57,7 @@ namespace UniversityLink.DataModels.Migrations
                         .HasColumnType("varchar(32)");
 
                     b.Property<string>("Icon")
-                        .HasColumnType("varchar(32)");
+                        .HasColumnType("varchar(512)");
 
                     b.Property<int>("Index")
                         .HasColumnType("INTEGER");
@@ -73,8 +73,6 @@ namespace UniversityLink.DataModels.Migrations
                     b.HasKey("Key");
 
                     b.HasIndex("CategoryModelKey");
-
-                    b.HasIndex("Index");
 
                     b.ToTable("Links");
                 });
