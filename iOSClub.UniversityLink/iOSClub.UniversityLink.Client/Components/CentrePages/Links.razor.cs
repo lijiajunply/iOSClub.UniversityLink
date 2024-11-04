@@ -1,4 +1,5 @@
-﻿using AntDesign;
+﻿using System.Diagnostics.CodeAnalysis;
+using AntDesign;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ namespace iOSClub.UniversityLink.Client.Components.CentrePages;
 
 public partial class Links
 {
+    [Inject] [NotNull] public NavigationManager? Nav { get; set; }
     [Parameter] public string Key { get; set; } = "";
 
     private CategoryModel Model { get; set; } = new();
@@ -40,7 +42,7 @@ public partial class Links
         await base.OnInitializedAsync();
     }
 
-    LinkModel? _link;
+    private LinkModel? _link;
 
     private async Task OnDrop(DragEventArgs e, LinkModel s)
     {
@@ -90,16 +92,17 @@ public partial class Links
         _addLinkVisible = true;
     }
 
-    private void ShowIconModal(LinkModel? link = null)
+    private void ShowIconModal(LinkModel link)
     {
         if (Member.Identity != "Founder" && Member.Identity != "Manager") return;
-        Link = link ?? new LinkModel();
+        Link = link;
         _iconVisible = true;
     }
 
     private void LinkHandleOk()
     {
         _linkForm.Submit();
+        Nav.Refresh(true);
     }
 
     private async Task LinkOnFinish()
@@ -135,7 +138,7 @@ public partial class Links
 
     [CascadingParameter] public UserModel Member { get; set; } = new();
 
-    bool _addModelVisible;
+    private bool _addModelVisible;
     private Form<CategoryModel> _form = new();
 
     private void ShowModal()
@@ -228,6 +231,6 @@ public partial class Links
         _categoryKey = "";
     }
     
-    private string GetIcon(string url)
+    private static string GetIcon(string url)
         => $"https://{url.Replace("https://", "").Replace("http://", "").Split('/').First()}/favicon.ico";
 }
