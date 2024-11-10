@@ -64,7 +64,7 @@ a, .btn-link {
     margin: 5px 5px 0 0;
     border-radius: 10px;
     padding: 5px;
-    border: 1px solid #ffffff;
+    border: 1px solid transparent;
 }
 
 .a-btn:hover {
@@ -82,4 +82,39 @@ a, .btn-link {
     color: #00000073;
     text-align: center;
     font-size: 0.8em;
+}
+
+.apple-card {
+    border-radius: 20px;
+    min-height: 300px;
+    max-height: 100%;
+    transition: .2s;
+    background: rgba(255, 255, 255);
+    
+}
+
+@media screen and (min-width: 768px) {
+    .apple-card:hover {
+        box-shadow: 0 0 10px #C0C0C0;
+        transform: scale(1.02);
+        transition: box-shadow 0.3s, border-color 0.3s, transform 0.2s;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .apple-card:active {
+        transform: scale(0.98);
+    }
+}
+
+.apple-card .apple-card-header {
+    background-color: rgba(248, 248, 252, .85);
+    border-radius: 20px 20px 0 0;
+    padding: 15px 30px 1px;
+}
+
+.apple-card .apple-card-context {
+    border-radius: 0 0 20px 20px;
+    padding: 1px 30px 1px;
+    overflow: auto;
 }

@@ -5,7 +5,7 @@
             @TitleTemplate
         </div>
     }
-    <div class="apple-card-context">
+    <div class="apple-card-context" style="@ContextStyle">
         @ContextTemplate
     </div>
 </div>
@@ -21,39 +21,3 @@
     [Parameter] public string? HeaderClass { get; set; }
     [Parameter] public string? ContextClass { get; set; }
 }
-
-<style>
-    .apple-card {
-        border-radius: 20px;
-        min-height: 300px;
-        max-height: 100%;
-        transition: .2s;
-        background-color: #fff;
-    }
-    
-    @@media screen and (min-width: 768px) {
-        .apple-card:hover {
-            box-shadow: 0 0 10px #C0C0C0;
-            transform: scale(1.02);
-            transition: box-shadow 0.3s, border-color 0.3s, transform 0.2s;
-        }   
-    }
-
-    @@media screen and (max-width: 768px) {  
-        .apple-card:active {
-            transform: scale(0.98);
-        }
-    }
-
-    .apple-card .apple-card-header {
-        background-color: rgba(248, 248, 252, .85);
-        border-radius: 20px 20px 0 0;
-        padding: 15px 30px 1px;
-    }
-
-    .apple-card .apple-card-context {
-        border-radius: 0 0 20px 20px;
-        padding: 1px 30px 1px;
-        overflow: auto;
-    }
-</style>
