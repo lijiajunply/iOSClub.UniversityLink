@@ -1,6 +1,5 @@
 ﻿@page "/"
 @using global::UniversityLink.DataModels
-@using iOSClub.UniversityLink.Client.AppControls
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<LinkContext> DbFactory
 @inject IJSRuntime JS
@@ -105,32 +104,6 @@
         }
     </GridRow>
 </Flex>
-
-<Footer Class="Layout-Footer" style="text-align: center;">
-    <p class="Layout-Footer-Title">
-        Copyright
-        <Icon Type="copyright" Theme="outline"/>
-        2024 iOS Club of XAUAT
-    </p>
-    <div>
-        <Space>
-            <Split>
-                <Divider Type="DirectionVHType.Vertical"/>
-            </Split>
-            <ChildContent>
-                <SpaceItem Class="desktop-phone-flex a">
-                    <a class="a" href="https://cn.xauat.edu.cn/" target="_blank">西安建筑科技大学 <Icon Type="link" Theme="outline"/></a>
-                </SpaceItem>
-                <SpaceItem Class="a">
-                    <a class="a" href="https://beian.miit.gov.cn/" target="_blank">备案号 陕ICP备2024031872号 <Icon Type="link" Theme="outline"/></a>
-                </SpaceItem>
-                <SpaceItem Class="desktop-phone-flex a">
-                    <a class="a" href="https://gitee.com/XAUATiOSClub" target="_blank">我们的Gitee组织 <Icon Type="link" Theme="outline"/></a>
-                </SpaceItem>
-            </ChildContent>
-        </Space>
-    </div>
-</Footer>
 
 @code
 {
