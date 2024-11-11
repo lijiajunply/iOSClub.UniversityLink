@@ -72,6 +72,12 @@ a, .btn-link {
     border-color: #1890ff;
 }
 
+@media screen and (max-width: 767px) {
+    .a-btn {
+        width: 18vw;
+    }
+}
+
 .btn-title {
     font-size: 1.2em;
     font-weight: 400;
