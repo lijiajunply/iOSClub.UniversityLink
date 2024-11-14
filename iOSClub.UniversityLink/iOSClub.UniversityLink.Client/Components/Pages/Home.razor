@@ -42,7 +42,6 @@
                                         @if (!isWeixin && link.Description == "微信打开")
                                         {
                                             <a @onclick="() => QrCodeModalOpen(link)" target="_blank"
-                                               style="margin: 5px 5px 0 0;"
                                                class="a-btn"
                                                title="@link.Description">
                                                 <div style="text-align: center">
@@ -70,7 +69,6 @@
                                         else
                                         {
                                             <a href="@link.Url" target="_blank"
-                                               style="margin: 5px 5px 0 0;"
                                                class="a-btn"
                                                title="@link.Description">
                                                 <div style="text-align: center">

@@ -78,6 +78,24 @@ a, .btn-link {
     }
 }
 
+@media screen and (min-width: 862px) {
+    .a-btn {
+        width: 6vw;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .a-btn {
+        width: 8vw;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .a-btn {
+        width: initial;
+    }
+}
+
 .btn-title {
     font-size: 1.2em;
     font-weight: 400;
