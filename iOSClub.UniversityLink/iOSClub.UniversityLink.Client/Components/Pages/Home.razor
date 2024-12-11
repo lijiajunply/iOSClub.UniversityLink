@@ -1,6 +1,5 @@
 ﻿@page "/"
 @using global::UniversityLink.DataModels
-@using iOSClub.UniversityLink.Client.AppControls
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<LinkContext> DbFactory
 @inject IJSRuntime JS
@@ -77,19 +76,17 @@
                                                         if (link.Icon.StartsWith("http"))
                                                         {
                                                             <img alt="" src="@link.Icon" style="height: 40px;width: 40px;border-radius: 4px"/>
-                                                            <div class="btn-description">@link.Name</div>
                                                         }
                                                         else
                                                         {
                                                             <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
-                                                            <div class="btn-description">@link.Name</div>
                                                         }
                                                     }
                                                     else
                                                     {
                                                         <img alt="" src="@GetIcon(link.Url)" style="height: 40px;width: 40px;border-radius: 4px"/>
-                                                        <div class="btn-description">@link.Name</div>
                                                     }
+                                                    <div class="btn-description">@link.Name</div>
                                                 </div>
                                             </a>
                                         }
