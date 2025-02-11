@@ -1,6 +1,6 @@
 using System.Text;
 using iOSClub.UniversityLink;
-using iOSClub.UniversityLink.Client.Models;
+using iOSClub.UniversityLink.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
+    .AddInteractiveServerComponents();
 
 builder.Services.AddAntDesign();
 builder.Services.AddControllers();
@@ -108,38 +107,39 @@ using (var scope = app.Services.CreateScope())
     //     }
     // }
 
-    if (context.Users.Any())
-    {
-        var sqlConversion = Environment.GetEnvironmentVariable("CONVERSION", EnvironmentVariableTarget.Process);
-        if (!string.IsNullOrEmpty(sqlConversion))
-        {
-            var newContext = DesignTimeDbContextFactory.Create(sqlConversion);
-            try
-            {
-                newContext.Database.Migrate();
-            }
-            catch (Exception e)
-            {
-                newContext.Database.EnsureCreated();
-                Console.WriteLine(e.Message);
-            }
-
-            if (!newContext.Users.Any())
-            {
-                await newContext.Users.AddRangeAsync(context.Users);
-
-                await newContext.SaveChangesAsync();
-
-                foreach (var category in context.Categories.Include(categoryModel => categoryModel.Links))
-                {
-                    await newContext.Categories.AddAsync(category);
-                    await newContext.SaveChangesAsync();
-                }
-            }
-        }
-
-        context.Dispose();
-    }
+    // if (context.Users.Any())
+    // {
+    //     var sqlConversion = Environment.GetEnvironmentVariable("CONVERSION", EnvironmentVariableTarget.Process);
+    //     if (!string.IsNullOrEmpty(sqlConversion))
+    //     {
+    //         var newContext = DesignTimeDbContextFactory.Create(sqlConversion);
+    //         try
+    //         {
+    //             newContext.Database.Migrate();
+    //         }
+    //         catch (Exception e)
+    //         {
+    //             newContext.Database.EnsureCreated();
+    //             Console.WriteLine(e.Message);
+    //         }
+    //
+    //         if (!newContext.Users.Any())
+    //         {
+    //             await newContext.Users.AddRangeAsync(context.Users);
+    //
+    //             await newContext.SaveChangesAsync();
+    //
+    //             foreach (var category in context.Categories.Include(categoryModel => categoryModel.Links))
+    //             {
+    //                 await newContext.Categories.AddAsync(category);
+    //                 await newContext.SaveChangesAsync();
+    //             }
+    //         }
+    //     }
+    //
+    //     
+    // }
+    context.Dispose();
 }
 
 app.UseHttpsRedirection();
@@ -151,8 +151,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(iOSClub.UniversityLink.Client._Imports).Assembly);
+    .AddInteractiveServerRenderMode();
 
 app.Run();

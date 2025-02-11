@@ -1,6 +1,6 @@
 ﻿using UniversityLink.DataModels;
 
-namespace iOSClub.UniversityLink.Client.Models;
+namespace iOSClub.UniversityLink.Models;
 
 public class AllDataModel
 {

@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iOSClub.UniversityLink", "iOSClub.UniversityLink\iOSClub.UniversityLink\iOSClub.UniversityLink.csproj", "{46EB35EC-6FB3-4F1A-9369-520D90EC3563}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iOSClub.UniversityLink.Client", "iOSClub.UniversityLink\iOSClub.UniversityLink.Client\iOSClub.UniversityLink.Client.csproj", "{C57CCBC5-BCD6-4089-95EE-7B4AF843FDE7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityLink.DataModels", "UniversityLink.DataModels\UniversityLink.DataModels.csproj", "{A1E885D5-F9E0-4850-A5D6-41DBD213430E}"
 EndProject
 Global
@@ -16,10 +14,6 @@ Global
 		{46EB35EC-6FB3-4F1A-9369-520D90EC3563}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46EB35EC-6FB3-4F1A-9369-520D90EC3563}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46EB35EC-6FB3-4F1A-9369-520D90EC3563}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C57CCBC5-BCD6-4089-95EE-7B4AF843FDE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C57CCBC5-BCD6-4089-95EE-7B4AF843FDE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C57CCBC5-BCD6-4089-95EE-7B4AF843FDE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C57CCBC5-BCD6-4089-95EE-7B4AF843FDE7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A1E885D5-F9E0-4850-A5D6-41DBD213430E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A1E885D5-F9E0-4850-A5D6-41DBD213430E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1E885D5-F9E0-4850-A5D6-41DBD213430E}.Release|Any CPU.ActiveCfg = Release|Any CPU

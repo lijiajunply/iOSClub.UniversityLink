@@ -26,6 +26,7 @@ public sealed class LinkContext : DbContext
     public DbSet<UserModel> Users { get; init; }
 }
 
+[Serializable]
 public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<LinkContext>
 {
     public LinkContext CreateDbContext(string[] args)
