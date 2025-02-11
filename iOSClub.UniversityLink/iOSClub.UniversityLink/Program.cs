@@ -108,7 +108,38 @@ using (var scope = app.Services.CreateScope())
     //     }
     // }
 
-    context.Dispose();
+    if (context.Users.Any())
+    {
+        var sqlConversion = Environment.GetEnvironmentVariable("CONVERSION", EnvironmentVariableTarget.Process);
+        if (!string.IsNullOrEmpty(sqlConversion))
+        {
+            var newContext = DesignTimeDbContextFactory.Create(sqlConversion);
+            try
+            {
+                newContext.Database.Migrate();
+            }
+            catch (Exception e)
+            {
+                newContext.Database.EnsureCreated();
+                Console.WriteLine(e.Message);
+            }
+
+            if (!newContext.Users.Any())
+            {
+                await newContext.Users.AddRangeAsync(context.Users);
+
+                await newContext.SaveChangesAsync();
+
+                foreach (var category in context.Categories.Include(categoryModel => categoryModel.Links))
+                {
+                    await newContext.Categories.AddAsync(category);
+                    await newContext.SaveChangesAsync();
+                }
+            }
+        }
+
+        context.Dispose();
+    }
 }
 
 app.UseHttpsRedirection();

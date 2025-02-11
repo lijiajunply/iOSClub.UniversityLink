@@ -34,6 +34,13 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<LinkContex
         optionsBuilder.UseSqlite("Data Source=Data.db");
         return new LinkContext(optionsBuilder.Options);
     }
+    
+    public static LinkContext Create(string s)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<LinkContext>();
+        optionsBuilder.UseNpgsql(s);
+        return new LinkContext(optionsBuilder.Options);
+    }
 }
 
 public static class DataTool

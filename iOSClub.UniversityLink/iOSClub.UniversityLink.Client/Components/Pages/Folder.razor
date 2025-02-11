@@ -1,0 +1,308 @@
+﻿@page "/Folder"
+@using global::UniversityLink.DataModels
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<LinkContext> DbFactory
+@inject IJSRuntime JS
+@inject ModalService _modalService
+
+<div @onclick="() => { IsClicked = false; }">
+    <div style="margin-top: 120px;text-align: center">
+        <Title Style="color: #f3f5f7;font-size: 2.8rem">@DateTime.Now.ToString("t")</Title>
+        <Flex Justify="center" Align="center">
+            <div id="searchBar">
+                <Space Size="@("0")">
+                    <SpaceItem>
+                        <div @onclick:stopPropagation="true">
+                            @* <Select> *@
+                            @*     <button @onclick="() => Console.WriteLine('a')"> *@
+                            @*         <i></i> *@
+                            @*     </button> *@
+                            @* </Select> *@
+                            <Popover Placement="@Placement.BottomLeft" ArrowPointAtCenter
+                                     Trigger="@(new[] { Trigger.Click })">
+                                <ChildContent>
+                                    <Button class="folder-button">
+                                        <i></i>
+                                    </Button>
+                                </ChildContent>
+                                <ContentTemplate>
+                                    @foreach (var item in SearchDic)
+                                    {
+                                        <div>
+                                            <Button Type="@ButtonType.Text" style="width: 100%" Class="pop-btn">
+                                                <Flex Justify="space-between" style="width: 100%">
+                                                    <i>@item.Value</i>
+                                                    @item.Key
+                                                </Flex>
+                                            </Button>
+                                        </div>
+                                    }
+                                </ContentTemplate>
+                            </Popover>
+                        </div>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <input @onclick:stopPropagation="true" id="input" @onclick="() => IsClicked = !IsClicked"
+                               type="text" class="search"/>
+                    </SpaceItem>
+                    <SpaceItem>
+                        <div class="folder-button" @onclick:stopPropagation="true">
+                            <i></i>
+                        </div>
+                    </SpaceItem>
+                </Space>
+            </div>
+        </Flex>
+    </div>
+
+    <br/>
+
+    <Flex Justify="center" Align="center">
+        <GridRow Class="block" Gutter="(30, 24)">
+            @foreach (var category in Categories)
+            {
+                <GridCol Xs="24" Sm="24" Md="12" Lg="8"
+                         Xl="8" Xxl="8">
+                    <div class="-card">
+                        <div style="overflow: auto;height: 233px">
+                            <GridRow Gutter="16">
+                                @foreach (var link in category.Links)
+                                {
+                                    <GridCol Span="8" Style="text-align: center">
+                                        @if (!isWeixin && link.Description == "微信打开")
+                                        {
+                                            <a @onclick="() => QrCodeModalOpen(link)" target="_blank"
+                                               class="folder-btn"
+                                               title="@link.Description">
+                                                <div style="text-align: center">
+                                                    @if (!string.IsNullOrEmpty(link.Icon))
+                                                    {
+                                                        if (link.Icon.StartsWith("http"))
+                                                        {
+                                                            <img alt="" src="@link.Icon"
+                                                                 style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                            <div class="btn-description">@link.Name</div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <IconFont Style="font-size: 40px"
+                                                                      Type="@($"icon-{link.Icon}")"/>
+                                                            <div class="btn-description">@link.Name</div>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <img alt="" src="@GetIcon(link.Url)"
+                                                             style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                        <div class="btn-description">@link.Name</div>
+                                                    }
+                                                </div>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@link.Url" target="_blank"
+                                               class="folder-btn"
+                                               title="@link.Description">
+                                                <div style="text-align: center">
+                                                    @if (!string.IsNullOrEmpty(link.Icon))
+                                                    {
+                                                        if (link.Icon.StartsWith("http"))
+                                                        {
+                                                            <img alt="" src="@link.Icon"
+                                                                 style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                        }
+                                                        else
+                                                        {
+                                                            <IconFont Style="font-size: 40px"
+                                                                      Type="@($"icon-{link.Icon}")"/>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <img alt="" src="@GetIcon(link.Url)"
+                                                             style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                    }
+                                                    <div class="btn-description">@link.Name</div>
+                                                </div>
+                                            </a>
+                                        }
+                                    </GridCol>
+                                }
+                            </GridRow>
+                        </div>
+                    </div>
+                    <div style="text-align: center;font-size: 13px;margin-top: 3px"
+                         class="btn-description">@category.Name</div>
+                </GridCol>
+            }
+        </GridRow>
+    </Flex>
+</div>
+
+
+
+@code
+{
+    private List<CategoryModel> Categories { get; set; } = [];
+    private bool isWeixin;
+
+    private bool IsClicked { get; set; }
+
+    private string Search { get; set; } = "google";
+
+    private Dictionary<string, string> SearchDic { get; set; } = new()
+    {
+        ["google"] = "\ue624",
+        ["bing"] = "\ue608",
+        ["duckduckgo"] = "\ueb82"
+    };
+
+    private void handleChange(string value)
+    {
+        Search = value;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Categories.Count != 0) return;
+        await using var context = await DbFactory.CreateDbContextAsync();
+        Categories = await context.Categories
+            .Include(x => x.Links.OrderBy(y => y.Index))
+            .OrderBy(x => x.Index)
+            .ToListAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        isWeixin = await JS.InvokeAsync<bool>("isWeiXin");
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task QrCodeModalOpen(LinkModel link)
+    {
+        await _modalService.CreateConfirmAsync<ConfirmTemplate, LinkModel, LinkModel>
+            (new ConfirmOptions() { OkCancel = false }, link);
+    }
+
+    private string GetIcon(string url)
+        => $"https://{url.Replace("https://", "").Replace("http://", "").Split('/').First()}/favicon.ico";
+}
+
+<style>
+    .ant-layout {
+        background-image: -webkit-linear-gradient(-64deg, #f9bf65, #ffab6b, #ff9977, #fc8986, #ef7e95, #e47da6, #d37fb5, #bf83c1, #ab8dcf, #9597d8, #7fa0dc, #6ca7da);
+        overflow: auto;
+    }
+
+
+    .Layout-Header {
+        display: none;
+    }
+
+
+    .block {
+        width: 80%;
+        margin-top: 45px;
+        margin-bottom: 45px;
+    }
+
+    @@media screen and (max-width: 768px) {
+        .block {
+            width: 90%;
+        }
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    #searchBar {
+        max-width: 80%;
+        height: 43px;
+    }
+
+    .-card {
+        background: rgba(255, 255, 255, 0.3);
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+        box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
+        border-radius: 30px;
+        padding: 20px;
+        height: 273px;
+        overflow: hidden;
+    }
+
+    .search {
+        outline: 0;
+        border: none;
+        padding: 0 20px;
+        font-size: 16px;
+        text-align: center;
+        width: @(IsClicked ? "530px" : "230px");
+        max-width: 80%;
+        height: 43px;
+        border-radius: 30px;
+        color: #fff;
+        background-color: rgba(255, 255, 255, .25);
+        box-shadow: rgba(0, 0, 0, .2) 0 0 10px;
+        -webkit-backdrop-filter: blur(10px) saturate(1.5);
+        backdrop-filter: blur(10px) saturate(1.5);
+        transition: color .25s, background-color .25s, box-shadow .25s, left .25s, opacity .25s, top .25s, width .25s
+    }
+
+    .search:hover {
+        background-color: rgba(255, 255, 255, .40);
+        box-shadow: rgba(0, 0, 0, .25) 0 0 10px;
+        width: 530px
+    }
+
+    .folder-btn {
+        display: inline-block;
+        transition: .2s;
+        cursor: pointer;
+        border-radius: 10px;
+        padding: 5px;
+        border: 1px solid transparent;
+    }
+
+    .btn-description {
+        color: #f3f5f7;
+    }
+
+    @@font-face {
+        font-family: iconfont;
+        src: url(https://at.alicdn.com/t/c/font_1010028_jywdehuvqqr.woff2?t=1719738755274) format('woff2'), url(https://at.alicdn.com/t/c/font_1010028_jywdehuvqqr.woff?t=1719738755274) format('woff'), url(https://at.alicdn.com/t/c/font_1010028_jywdehuvqqr.ttf?t=1719738755274) format('truetype')
+    }
+
+    i {
+        font-family: iconfont, serif;
+        font-style: normal;
+        -webkit-font-smoothing: antialiased;
+        -webkit-text-stroke-width: 0;
+    }
+
+    .folder-button {
+        border-radius: 50%;
+        padding: 5px;
+        width: 32px;
+        height: 32px;
+        color: #f3f5f7;
+        background-color: rgba(255, 255, 255, .25);
+        box-shadow: rgba(0, 0, 0, .2) 0 0 10px;
+        -webkit-backdrop-filter: blur(10px) saturate(1.5);
+        backdrop-filter: blur(10px) saturate(1.5);
+        transition: color .25s, background-color .25s, box-shadow .25s, left .25s, opacity .25s, top .25s, width .25s;
+        border: none;
+    }
+    
+    .pop-btn{
+        font-size: 12px;
+        transition: .25s;
+        border-radius: 5px;
+        span{
+            width: 100%;
+        }
+    }
+</style>
