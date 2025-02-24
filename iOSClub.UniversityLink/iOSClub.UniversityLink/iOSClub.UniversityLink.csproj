@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -10,12 +10,12 @@
     <ItemGroup>
         <PackageReference Include="AntDesign" Version="1.0.0" />
         <PackageReference Include="AntDesign.Charts" Version="0.5.6" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.6.0" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <ProjectReference Include="..\..\UniversityLink.DataModels\UniversityLink.DataModels.csproj" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.2" />
     </ItemGroup>
 
     <ItemGroup>
