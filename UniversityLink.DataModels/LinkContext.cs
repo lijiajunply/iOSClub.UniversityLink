@@ -6,21 +6,8 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace UniversityLink.DataModels;
 
-public sealed class LinkContext : DbContext
+public sealed class LinkContext(DbContextOptions<LinkContext> options) : DbContext(options)
 {
-    public LinkContext(DbContextOptions<LinkContext> options)
-        : base(options)
-    {
-        try
-        {
-            Database.Migrate();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
-    }
-
     public DbSet<LinkModel> Links { get; init; }
     public DbSet<CategoryModel> Categories { get; init; }
     public DbSet<UserModel> Users { get; init; }

@@ -65,7 +65,17 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<LinkContext>();
-
+    
+    try
+    {
+        context.Database.Migrate();
+    }
+    catch (Exception e)
+    {
+        context.Database.EnsureCreated();
+        Console.WriteLine(e.Message);
+    }
+    
     // if (!context.Categories.Any())
     // {
     //     var xauat = new CategoryModel() { Name = "建大生活", Description = "西建大校园网站", Icon = "fangyuan" };
@@ -139,7 +149,8 @@ using (var scope = app.Services.CreateScope())
     //
     //     
     // }
-    context.Dispose();
+    await context.SaveChangesAsync();
+    await context.DisposeAsync();
 }
 
 app.UseHttpsRedirection();
