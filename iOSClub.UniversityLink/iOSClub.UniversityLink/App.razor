@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject IWebHostEnvironment WebEnvironment
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -14,6 +16,19 @@
     <link rel="icon" type="image/png" href="iOS_Club_LOGO.png"/>
     <link href="_content/AntDesign/css/ant-design-blazor.css" rel="stylesheet">
     <HeadOutlet @rendermode="InteractiveServer"/>
+
+    <!-- Google tag (gtag.js) -->
+    @if (WebEnvironment.IsProduction())
+    {
+        <script async src="https://www.googletagmanager.com/gtag/js?id=@(Environment.GetEnvironmentVariable("GOOGLE", EnvironmentVariableTarget.Process))"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', '@(Environment.GetEnvironmentVariable("GOOGLE", EnvironmentVariableTarget.Process))');
+        </script>
+    }
 </head>
 
 <body>
