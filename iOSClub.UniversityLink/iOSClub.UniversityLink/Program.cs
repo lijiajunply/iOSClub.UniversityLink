@@ -65,90 +65,18 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<LinkContext>();
-    
+
     try
     {
-        context.Database.Migrate();
+        await context.Database.MigrateAsync();
     }
     catch (Exception e)
     {
         context.Database.EnsureCreated();
         Console.WriteLine(e.Message);
     }
-    
-    // if (!context.Categories.Any())
-    // {
-    //     var xauat = new CategoryModel() { Name = "建大生活", Description = "西建大校园网站", Icon = "fangyuan" };
-    //     var ios = new CategoryModel()
-    //     {
-    //         Name = "社团出品", Description = "iOS Club 出品的App",
-    //         Icon = "pingguo"
-    //     };
-    //     var other = new CategoryModel() { Name = "其他", Description = "其他资源", Icon = "gengduo1" };
-    //     var recommend = new CategoryModel() { Name = "校友推荐", Description = "推荐资源", Icon = "shoucang2" };
-    //     var test = new CategoryModel() { Name = "考试学习", Description = "考试和学习资料", Icon = "wodexuexi" };
-    //     var neighborhood = new CategoryModel() { Name = "校园周边", Description = "建大周边", Icon = "jiejiarifanxiao" };
-    //     var tool = new CategoryModel { Name = "在线工具", Description = "在线工具", Icon = "gongju" };
-    //     xauat.Key = xauat.ToString();
-    //     ios.Key = ios.ToString();
-    //     other.Key = other.ToString();
-    //     recommend.Key = recommend.ToString();
-    //     neighborhood.Key = neighborhood.ToString();
-    //     tool.Key = tool.ToString();
-    //     test.Key = test.ToString();
-    //     var list = new List<CategoryModel>()
-    //         { xauat, test, neighborhood, recommend, ios, tool, other };
-    //     for (var i = 0; i < list.Count; i++)
-    //     {
-    //         var model = list[i];
-    //         model.Index = i;
-    //         await context.Categories.AddAsync(model);
-    //         await context.SaveChangesAsync();
-    //     }
-    // }
 
-    // if(context.Users.Any())
-    // {
-    //     var list = await context.Users.Where(x => x.Identity == "Department").ToListAsync();
-    //     foreach (var item in list)
-    //     {
-    //         item.Identity = "Member";
-    //         await context.SaveChangesAsync();
-    //     }
-    // }
 
-    // if (context.Users.Any())
-    // {
-    //     var sqlConversion = Environment.GetEnvironmentVariable("CONVERSION", EnvironmentVariableTarget.Process);
-    //     if (!string.IsNullOrEmpty(sqlConversion))
-    //     {
-    //         var newContext = DesignTimeDbContextFactory.Create(sqlConversion);
-    //         try
-    //         {
-    //             newContext.Database.Migrate();
-    //         }
-    //         catch (Exception e)
-    //         {
-    //             newContext.Database.EnsureCreated();
-    //             Console.WriteLine(e.Message);
-    //         }
-    //
-    //         if (!newContext.Users.Any())
-    //         {
-    //             await newContext.Users.AddRangeAsync(context.Users);
-    //
-    //             await newContext.SaveChangesAsync();
-    //
-    //             foreach (var category in context.Categories.Include(categoryModel => categoryModel.Links))
-    //             {
-    //                 await newContext.Categories.AddAsync(category);
-    //                 await newContext.SaveChangesAsync();
-    //             }
-    //         }
-    //     }
-    //
-    //     
-    // }
     await context.SaveChangesAsync();
     await context.DisposeAsync();
 }
@@ -162,6 +90,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode(o => o.ContentSecurityFrameAncestorsPolicy = "'none'");
 
 app.Run();
