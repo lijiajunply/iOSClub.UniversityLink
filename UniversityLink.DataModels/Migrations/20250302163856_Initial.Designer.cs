@@ -10,8 +10,8 @@ using UniversityLink.DataModels;
 namespace UniversityLink.DataModels.Migrations
 {
     [DbContext(typeof(LinkContext))]
-    [Migration("20250224081405_ToNet9")]
-    partial class ToNet9
+    [Migration("20250302163856_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
