@@ -4,6 +4,7 @@ using iOSClub.UniversityLink.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using UniversityLink.DataModels;
 
@@ -45,7 +46,9 @@ else
 {
     builder.Services.AddDbContextFactory<LinkContext>(opt =>
         opt.UseNpgsql(sql,
-            o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+            ).ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)) // <--- This line ✨
+            .EnableDetailedErrors());
 }
 
 var app = builder.Build();
@@ -66,7 +69,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<LinkContext>();
 
-    if (context.Database.GetPendingMigrations().Any()) 
+    if (context.Database.GetPendingMigrations().Any())
     {
         await context.Database.MigrateAsync();
     }
