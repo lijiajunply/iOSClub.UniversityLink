@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace UniversityLink.DataModels;
 
@@ -11,6 +12,11 @@ public sealed class LinkContext(DbContextOptions<LinkContext> options) : DbConte
     public DbSet<LinkModel> Links { get; init; }
     public DbSet<CategoryModel> Categories { get; init; }
     public DbSet<UserModel> Users { get; init; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+    }
 }
 
 [Serializable]

@@ -66,14 +66,9 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<LinkContext>();
 
-    try
+    if (context.Database.GetPendingMigrations().Any()) 
     {
         await context.Database.MigrateAsync();
-    }
-    catch (Exception e)
-    {
-        context.Database.EnsureCreated();
-        Console.WriteLine(e.Message);
     }
 
 
