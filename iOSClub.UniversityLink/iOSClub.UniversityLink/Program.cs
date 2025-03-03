@@ -69,6 +69,7 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    app.UseResponseCompression();
     //app.UseHsts();
 }
 
@@ -79,7 +80,14 @@ using (var scope = app.Services.CreateScope())
 
     if (context.Database.GetPendingMigrations().Any())
     {
-        await context.Database.MigrateAsync();
+        try
+        {
+            await context.Database.MigrateAsync();
+        }
+        catch
+        {
+            //
+        }
     }
 
 
@@ -96,6 +104,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode(o => o.ContentSecurityFrameAncestorsPolicy = "'none'");
+    .AddInteractiveServerRenderMode(o =>
+    {
+        o.DisableWebSocketCompression = true;
+        o.ContentSecurityFrameAncestorsPolicy = "'none'";
+    });
 
 app.Run();

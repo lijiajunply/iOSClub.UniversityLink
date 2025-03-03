@@ -7,3 +7,5 @@ riderModule.iml
 *.db-wal
 *.db-shm
 .vs/
+
+key/
