@@ -14,7 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents(o =>
+    {
+        o.MaxBufferedUnacknowledgedRenderBatches = 1024;
+    });
 
 builder.Services.AddAntDesign();
 builder.Services.AddControllers();
@@ -69,7 +72,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    app.UseResponseCompression();
     //app.UseHsts();
 }
 
