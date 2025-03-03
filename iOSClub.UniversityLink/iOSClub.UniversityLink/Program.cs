@@ -16,7 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents(o =>
     {
-        o.MaxBufferedUnacknowledgedRenderBatches = 1024;
+        o.MaxBufferedUnacknowledgedRenderBatches = 1024 * 1024 * 1024;
+        o.DisconnectedCircuitMaxRetained = 1024;
     });
 
 builder.Services.AddAntDesign();
