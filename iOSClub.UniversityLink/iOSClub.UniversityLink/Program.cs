@@ -3,9 +3,11 @@ using iOSClub.UniversityLink;
 using iOSClub.UniversityLink.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
+using NpgsqlDataProtection;
 using UniversityLink.DataModels;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,6 +43,9 @@ if (string.IsNullOrEmpty(sql))
     builder.Services.AddDbContextFactory<LinkContext>(opt =>
         opt.UseSqlite("Data Source=Data.db",
             o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+    
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo("./keys"));
 }
 else
 {
@@ -49,6 +54,9 @@ else
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
             ).ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)) // <--- This line ✨
             .EnableDetailedErrors());
+    
+    builder.Services.AddDataProtection()
+        .PersistKeysToPostgres(sql,true);
 }
 
 var app = builder.Build();
