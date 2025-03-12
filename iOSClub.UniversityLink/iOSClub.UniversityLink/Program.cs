@@ -82,7 +82,14 @@ using (var scope = app.Services.CreateScope())
 
     if (context.Database.GetPendingMigrations().Any())
     {
-        await context.Database.MigrateAsync();
+        try
+        {
+            await context.Database.MigrateAsync();
+        }
+        catch
+        {
+            await context.Database.EnsureCreatedAsync();
+        }
     }
 
 
