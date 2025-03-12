@@ -75,15 +75,26 @@ else
     //app.UseHsts();
 }
 
-// using (var scope = app.Services.CreateScope())
-// {
-//     var services = scope.ServiceProvider;
-//     var context = services.GetRequiredService<LinkContext>();
-//
-//
-//     await context.SaveChangesAsync();
-//     await context.DisposeAsync();
-// }
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<LinkContext>();
+
+    if (context.Database.GetPendingMigrations().Any())
+    {
+        try
+        {
+            await context.Database.MigrateAsync();
+        }
+        catch
+        {
+            await context.Database.EnsureCreatedAsync();
+        }
+    }
+
+    await context.SaveChangesAsync();
+    await context.DisposeAsync();
+}
 
 //app.UseHttpsRedirection();
 
