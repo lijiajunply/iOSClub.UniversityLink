@@ -85,6 +85,8 @@ using (var scope = app.Services.CreateScope())
     {
         try
         {
+            await context.Database.OpenConnectionAsync();
+            await context.Database.CloseConnectionAsync();
             await context.Database.MigrateAsync();
         }
         catch
