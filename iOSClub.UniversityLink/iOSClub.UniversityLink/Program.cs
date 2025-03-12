@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using NpgsqlDataProtection;
 using UniversityLink.DataModels;
@@ -83,16 +82,7 @@ using (var scope = app.Services.CreateScope())
 
     if (context.Database.GetPendingMigrations().Any())
     {
-        try
-        {
-            await context.Database.OpenConnectionAsync();
-            await context.Database.CloseConnectionAsync();
-            await context.Database.MigrateAsync();
-        }
-        catch
-        {
-            //
-        }
+        await context.Database.MigrateAsync();
     }
 
 
@@ -109,10 +99,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode(o =>
-    {
-        o.DisableWebSocketCompression = true;
-        o.ContentSecurityFrameAncestorsPolicy = "'none'";
-    });
+    .AddInteractiveServerRenderMode();
 
 app.Run();
