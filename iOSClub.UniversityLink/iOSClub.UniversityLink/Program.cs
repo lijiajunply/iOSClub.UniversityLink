@@ -13,11 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents(o =>
-    {
-        o.MaxBufferedUnacknowledgedRenderBatches = 1024 * 1024 * 1024;
-        o.DisconnectedCircuitMaxRetained = 1024;
-    });
+    .AddInteractiveServerComponents();
 
 builder.Services.AddAntDesign();
 builder.Services.AddControllers();
