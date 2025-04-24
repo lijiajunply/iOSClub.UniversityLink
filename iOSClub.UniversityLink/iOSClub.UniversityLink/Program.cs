@@ -48,7 +48,6 @@ if (string.IsNullOrEmpty(sql))
 }
 else
 {
-    Console.WriteLine(sql);
     builder.Services.AddDbContextFactory<LinkContext>(opt =>
         opt.UseNpgsql(sql,
             o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)

@@ -1,11 +1,9 @@
 ﻿@page "/"
 @using global::UniversityLink.DataModels
-@using iOSClub.UniversityLink.AppControls
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<LinkContext> DbFactory
 @inject IJSRuntime JS
 @inject ModalService _modalService
-@inject IMessageService _message
 
 <Flex Justify="center" Align="center">
     <GridRow Class="block" Gutter="(30, 24)">
@@ -13,9 +11,16 @@
         {
             var category = Categories[index];
             var i = index != Categories.Count - 1 || Categories.Count % 2 == 0 ? index % 4 is 1 or 2 ? 15 : 9 : 24;
-            <GridCol Xs="24" Sm="24" Md="@(index != Categories.Count - 1 || Categories.Count % 2 == 0 ? 12 : 24)" Lg="@i"
+            var col = i switch
+            {
+                15 => 4,
+                24 => 3,
+                _ => 6
+            };
+            <GridCol Xs="24" Sm="24" Md="@(index != Categories.Count - 1 || Categories.Count % 2 == 0 ? 12 : 24)"
+                     Lg="@i"
                      Xl="@i" Xxl="@i">
-                <AppleCard Style="height: 100%" >
+                <AppleCard Style="height: 100%">
                     <TitleTemplate>
                         <Flex Gap="10">
                             <IconFont Style="font-size: 40px" Type="@($"icon-{category.Icon}")"/>
@@ -24,77 +29,74 @@
                         <div style="color: #00000073;margin-top: 3px;margin-bottom: 3px">@category.Description</div>
                     </TitleTemplate>
                     <ContextTemplate>
-                        <Flex Gap="small" Wrap="wrap" Style="margin-bottom: 8px;">
+                        <GridRow Gutter="(4,4)" Style="margin-bottom: 8px;">
                             @foreach (var link in category.Links)
                             {
-                                <Dropdown Trigger="new[] { Trigger.ContextMenu }">
-                                    <Overlay>
-                                        <Menu Style="border-radius: 10px">
-                                            <MenuItem OnClick="async () => await CopyText(link.Url)">复制Url</MenuItem>
-                                            <MenuItem OnClick="async () => await CopyText(link.Name)">复制文本</MenuItem>
-                                            @if (!string.IsNullOrEmpty(link.Description))
-                                            {
-                                                <MenuItem OnClick="async () => await CopyText(link.Description)">复制描述</MenuItem>
-                                            }
-                                        </Menu>
-                                    </Overlay>
-                                    <ChildContent>
-                                        @if (!isWeixin && link.Description == "微信打开")
-                                        {
-                                            <a @onclick="() => QrCodeModalOpen(link)" target="_blank"
-                                               class="a-btn"
-                                               title="@link.Description">
-                                                <div style="text-align: center">
-                                                    @if (!string.IsNullOrEmpty(link.Icon))
+                                <GridCol Xs="8" Sm="8"
+                                         Md="8"
+                                         Lg="@col"
+                                         Xl="@col" Xxl="@col">
+                                    @if (!isWeixin && link.Description == "微信打开")
+                                    {
+                                        <a @onclick="() => QrCodeModalOpen(link)" target="_blank"
+                                           class="a-btn"
+                                           title="@link.Description">
+                                            <div style="text-align: center">
+                                                @if (!string.IsNullOrEmpty(link.Icon))
+                                                {
+                                                    if (link.Icon.StartsWith("http"))
                                                     {
-                                                        if (link.Icon.StartsWith("http"))
-                                                        {
-                                                            <img alt="" src="@link.Icon" style="height: 40px;width: 40px;border-radius: 4px"/>
-                                                            <div class="btn-description">@link.Name</div>
-                                                        }
-                                                        else
-                                                        {
-                                                            <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
-                                                            <div class="btn-description">@link.Name</div>
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        <img alt="" src="@GetIcon(link.Url)" style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                        <img alt="" src="@link.Icon"
+                                                             style="height: 40px;width: 40px;border-radius: 4px"/>
                                                         <div class="btn-description">@link.Name</div>
                                                     }
-                                                </div>
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <a href="@link.Url" target="_blank"
-                                               class="a-btn"
-                                               title="@link.Description">
-                                                <div style="text-align: center">
-                                                    @if (!string.IsNullOrEmpty(link.Icon))
+                                                    else
                                                     {
-                                                        if (link.Icon.StartsWith("http"))
-                                                        {
-                                                            <img alt="" src="@link.Icon" style="height: 40px;width: 40px;border-radius: 4px"/>
-                                                        }
-                                                        else
-                                                        {
-                                                            <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
-                                                        }
+                                                        <IconFont Style="font-size: 40px"
+                                                                  Type="@($"icon-{link.Icon}")"/>
+                                                        <div class="btn-description">@link.Name</div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <img alt="" src="@GetIcon(link.Url)"
+                                                         style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                    <div class="btn-description">@link.Name</div>
+                                                }
+                                            </div>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@link.Url" target="_blank"
+                                           class="a-btn"
+                                           title="@link.Description">
+                                            <div style="text-align: center">
+                                                @if (!string.IsNullOrEmpty(link.Icon))
+                                                {
+                                                    if (link.Icon.StartsWith("http"))
+                                                    {
+                                                        <img alt="" src="@link.Icon"
+                                                             style="height: 40px;width: 40px;border-radius: 4px"/>
                                                     }
                                                     else
                                                     {
-                                                        <img alt="" src="@GetIcon(link.Url)" style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                        <IconFont Style="font-size: 40px"
+                                                                  Type="@($"icon-{link.Icon}")"/>
                                                     }
-                                                    <div class="btn-description">@link.Name</div>
-                                                </div>
-                                            </a>
-                                        }
-                                    </ChildContent>
-                                </Dropdown>
+                                                }
+                                                else
+                                                {
+                                                    <img alt="" src="@GetIcon(link.Url)"
+                                                         style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                }
+                                                <div class="btn-description">@link.Name</div>
+                                            </div>
+                                        </a>
+                                    }
+                                </GridCol>
                             }
-                        </Flex>
+                        </GridRow>
                     </ContextTemplate>
                 </AppleCard>
             </GridCol>
@@ -115,13 +117,19 @@
             </Split>
             <ChildContent>
                 <SpaceItem Class="desktop-phone-flex a">
-                    <a class="a" href="https://cn.xauat.edu.cn/" target="_blank">西安建筑科技大学 <Icon Type="link" Theme="outline"/></a>
+                    <a class="a" href="https://cn.xauat.edu.cn/" target="_blank">西安建筑科技大学
+                        <Icon Type="link" Theme="outline"/>
+                    </a>
                 </SpaceItem>
                 <SpaceItem Class="a">
-                    <a class="a" href="https://beian.miit.gov.cn/" target="_blank">备案号 陕ICP备2024031872号 <Icon Type="link" Theme="outline"/></a>
+                    <a class="a" href="https://beian.miit.gov.cn/" target="_blank">备案号 陕ICP备2024031872号
+                        <Icon Type="link" Theme="outline"/>
+                    </a>
                 </SpaceItem>
                 <SpaceItem Class="desktop-phone-flex a">
-                    <a class="a" href="https://gitee.com/XAUATiOSClub" target="_blank">我们的Gitee组织 <Icon Type="link" Theme="outline"/></a>
+                    <a class="a" href="https://gitee.com/XAUATiOSClub" target="_blank">我们的Gitee组织
+                        <Icon Type="link" Theme="outline"/>
+                    </a>
                 </SpaceItem>
             </ChildContent>
         </Space>
@@ -156,13 +164,7 @@
             (new ConfirmOptions() { OkCancel = false }, link);
     }
 
-    private async Task CopyText(string c)
-    {
-        var result = await JS.InvokeAsync<bool>("copyText", c);
-        await _message.Info("复制" + (result ? "成功" : "失败"));
-    }
-    
-    private string GetIcon(string url)
+    private static string GetIcon(string url)
         => $"https://{url.Replace("https://", "").Replace("http://", "").Split('/').First()}/favicon.ico";
 }
 
@@ -211,12 +213,12 @@
         color: #f3f5f7;
         transition: .2s;
         text-decoration: none;
-        background: linear-gradient(#07f2,#07f2) no-repeat center bottom / 100% 0;
+        background: linear-gradient(#07f2, #07f2) no-repeat center bottom / 100% 0;
     }
-    
-    .a:hover{
+
+    .a:hover {
         color: #f3f5f7;
-        background: linear-gradient(#07f2,#07f2) no-repeat center bottom / 100% 100%;
+        background: linear-gradient(#07f2, #07f2) no-repeat center bottom / 100% 100%;
         border-radius: .2em;
     }
 </style>
