@@ -1,7 +1,9 @@
 ﻿using AntDesign;
+using iOSClub.UniversityLink.AppControls;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using UniversityLink.DataModels;
 
@@ -14,6 +16,13 @@ public partial class Category
     private List<CategoryModel> Categories { get; set; } = [];
     private CategoryModel Model { get; set; } = new();
     private IconModel[] AllIcons { get; set; } = [];
+    private bool isWeixin;
+
+    private async Task QrCodeModalOpen(LinkModel link)
+    {
+        await _modalService.CreateConfirmAsync<ConfirmTemplate, LinkModel, LinkModel>
+            (new ConfirmOptions() { OkCancel = false }, link);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -40,8 +49,15 @@ public partial class Category
         await base.OnInitializedAsync();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        isWeixin = await JS.InvokeAsync<bool>("isWeiXin");
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
-    CategoryModel? _categoryModel;
+
+    private CategoryModel? _categoryModel;
 
     private async Task OnDrop(DragEventArgs e, CategoryModel s)
     {

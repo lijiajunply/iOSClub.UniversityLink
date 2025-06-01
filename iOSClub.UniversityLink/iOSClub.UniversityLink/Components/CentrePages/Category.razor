@@ -3,6 +3,8 @@
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<LinkContext> DbFactory
 @inject NavigationManager Nav
+@inject ModalService _modalService
+@inject IJSRuntime JS
 
 <PageTitle>全部链接 - 建大Link</PageTitle>
 
@@ -114,46 +116,84 @@
                                 </Flex>
                                 <Paragraph Type="secondary">@category.Description</Paragraph>
                             </div>
-                            <Button Type="@ButtonType.Text" OnClick="@(() => Nav.NavigateTo($"/Links/{category.Key}", true))">
+                            <Button Type="@ButtonType.Text"
+                                    OnClick="@(() => Nav.NavigateTo($"/Links/{category.Key}", true))">
                                 <IconFont Style="font-size: 30px" Type="icon-bianji1"/>
                             </Button>
                         </Flex>
-                        <Flex Gap="10" Wrap="wrap">
+                        <GridRow Gutter="(4,4)" Style="margin-bottom: 8px;">
                             @foreach (var link in category.Links)
                             {
-                                <a href="@link.Url" target="_blank"
-                                   style="margin: 5px 5px 0 0;"
-                                   class="a-btn"
-                                   title="@link.Description">
-                                    <div style="text-align: center">
-                                        @if (!string.IsNullOrEmpty(link.Icon))
-                                        {
-                                            if (link.Icon.StartsWith("http"))
-                                            {
-                                                <img alt="" src="@link.Icon" style="height: 40px;width: 40px;border-radius: 4px"/>
+                                <GridCol Span="8">
+                                    @if (!isWeixin && link.Description == "微信打开")
+                                    {
+                                        <a @onclick="() => QrCodeModalOpen(link)" target="_blank"
+                                           class="a-btn"
+                                           title="@link.Description">
+                                            <div style="text-align: center">
+                                                @if (!string.IsNullOrEmpty(link.Icon))
+                                                {
+                                                    if (link.Icon.StartsWith("http"))
+                                                    {
+                                                        <img alt="" src="@link.Icon"
+                                                             style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                        <div class="btn-description">@link.Name</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <IconFont Style="font-size: 40px"
+                                                                  Type="@($"icon-{link.Icon}")"/>
+                                                        <div class="btn-description">@link.Name</div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <img alt="" src="@GetIcon(link.Url)"
+                                                         style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                    <div class="btn-description">@link.Name</div>
+                                                }
+                                            </div>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@link.Url" target="_blank"
+                                           class="a-btn"
+                                           title="@link.Description">
+                                            <div style="text-align: center">
+                                                @if (!string.IsNullOrEmpty(link.Icon))
+                                                {
+                                                    if (link.Icon.StartsWith("http"))
+                                                    {
+                                                        <img alt="" src="@link.Icon"
+                                                             style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                    }
+                                                    else
+                                                    {
+                                                        <IconFont Style="font-size: 40px"
+                                                                  Type="@($"icon-{link.Icon}")"/>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <img alt="" src="@GetIcon(link.Url)"
+                                                         style="height: 40px;width: 40px;border-radius: 4px"/>
+                                                }
                                                 <div class="btn-description">@link.Name</div>
-                                            }
-                                            else
-                                            {
-                                                <IconFont Style="font-size: 40px" Type="@($"icon-{link.Icon}")"/>
-                                                <div class="btn-description">@link.Name</div>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <img alt="" src="@GetIcon(link.Url)" style="height: 40px;width: 40px;border-radius: 4px"/>
-                                            <div class="btn-description">@link.Name</div>
-                                        }
-                                    </div>
-                                </a>
+                                            </div>
+                                        </a>
+                                    }
+                                </GridCol>
                             }
-                        </Flex>
+                        </GridRow>
                         @if (category.Links.Count == 0)
                         {
                             <Empty Image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
                                    Style="padding: 20px" Description="@("当前还未添加任何链接")">
                                 <ChildContent>
-                                    <Button type="@ButtonType.Primary" OnClick="@(() => ShowLinkModal(key: category.Key))">添加一个</Button>
+                                    <Button type="@ButtonType.Primary"
+                                            OnClick="@(() => ShowLinkModal(key: category.Key))">添加一个
+                                    </Button>
                                 </ChildContent>
                             </Empty>
                         }
@@ -165,12 +205,12 @@
 </Flex>
 
 <style>
-    .block{
+    .block {
         width: 80%;
     }
-    
+
     @@media screen and (max-width: 768px) {
-        .block{
+        .block {
             width: 90%;
         }
     }
