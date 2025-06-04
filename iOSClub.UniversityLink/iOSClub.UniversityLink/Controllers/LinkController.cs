@@ -14,6 +14,7 @@ public class LinkController(LinkContext context) : ControllerBase
     {
         return await context.Categories
             .Include(x => x.Links)
+            .OrderBy(x => x.Index)
             .ToListAsync();
     }
 
