@@ -36,6 +36,16 @@ builder.Services.AddAuthentication(options => { options.DefaultScheme = JwtBeare
 
 builder.Services.AddAuthorizationCore();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowAnyOrigin();
+    });
+});
+
 var sql = Environment.GetEnvironmentVariable("SQL", EnvironmentVariableTarget.Process);
 if (string.IsNullOrEmpty(sql))
 {
@@ -98,6 +108,7 @@ app.UseAntiforgery();
 
 app.UseAuthorization();
 app.MapControllers();
+app.UseCors();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
