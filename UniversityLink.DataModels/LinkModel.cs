@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace UniversityLink.DataModels;
@@ -68,4 +69,8 @@ public class LoginModel
 }
 
 [Serializable]
-public record IconModel(string name, string font_class);
+public class IconModel
+{
+    [JsonPropertyName("name")] public string Name { get; set; } = "";
+    [JsonPropertyName("font_class")] public string FontClass { get; set; } = "";
+}
