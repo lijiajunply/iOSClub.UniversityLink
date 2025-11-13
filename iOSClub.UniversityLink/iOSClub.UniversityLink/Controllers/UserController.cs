@@ -106,16 +106,9 @@ public class UserController(IUserService userService) : ControllerBase
     {
         try
         {
-            // CreateUserAsync需要用户对象和密码参数，这里传入空密码作为临时解决方案
             var createdUser = await userService.CreateUserAsync(user, "", cancellationToken);
-            // 使用Key替代不存在的Id属性，使用正确的方法名
-            // 由于GetUserById接受int参数，而UserId是string，需要转换
-            if (int.TryParse(createdUser.UserId, out var userIdInt))
-            {
-                return CreatedAtAction(nameof(GetUserById), new { id = userIdInt }, createdUser);
-            }
-
-            return CreatedAtAction(nameof(GetUserById), new { id = 0 }, createdUser);
+            
+            return CreatedAtAction(nameof(GetUserById), new { id = createdUser.UserId }, createdUser);
         }
         catch (ArgumentException ex)
         {

@@ -12,7 +12,7 @@ public class LinkService(IUnitOfWork unitOfWork) : ILinkService
     }
     
     // 按ID获取链接
-    public async Task<LinkModel?> GetLinkByIdAsync(int id, CancellationToken cancellationToken = default)
+    public Task<LinkModel?> GetLinkByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         // 在当前实现中，我们通过Key查找链接
         // 由于模型中没有Id属性，这里简单返回null
@@ -36,7 +36,7 @@ public class LinkService(IUnitOfWork unitOfWork) : ILinkService
     }
     
     // 按分类获取链接
-    public async Task<List<LinkModel>> GetLinksByCategoryAsync(int categoryId, CancellationToken cancellationToken = default)
+    public async Task<List<LinkModel>> GetLinksByCategoryAsync(string categoryId, CancellationToken cancellationToken = default)
     {
         // 在当前实现中，我们通过Key查找分类
         // 由于模型中没有Id属性，这里返回空列表
@@ -106,14 +106,14 @@ public class LinkService(IUnitOfWork unitOfWork) : ILinkService
     }
     
     // 删除链接
-    public async Task DeleteLinkAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteLinkAsync(string id, CancellationToken cancellationToken = default)
     {
         // 在当前实现中，我们通过Key删除链接
         // 由于模型中没有Id属性，这里不执行操作
     }
     
     // 更新链接排序
-    public async Task UpdateLinkSortAsync(int categoryId, List<int> linkIds, CancellationToken cancellationToken = default)
+    public async Task UpdateLinkSortAsync(string categoryId, List<string> linkIds, CancellationToken cancellationToken = default)
     {
         // 在当前实现中，我们使用Index属性进行排序
         // 由于模型中没有Id属性，这里不执行操作

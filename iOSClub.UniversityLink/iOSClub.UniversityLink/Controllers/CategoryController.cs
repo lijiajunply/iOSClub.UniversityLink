@@ -26,7 +26,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     
     // GET: api/category/{id}
     [HttpGet("{id}")]
-    public async Task<ActionResult<CategoryModel>> GetCategoryById(int id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<CategoryModel>> GetCategoryById(string id, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -65,15 +65,12 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     }
     
     // PUT: api/category/{id}
-    [HttpPut("{id}")]
+    [HttpPost("/update")]
     [Authorize(Roles = "Admin,User")]
-    public async Task<ActionResult> UpdateCategory(int id, [FromBody] CategoryModel category, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> UpdateCategory([FromBody] CategoryModel category, CancellationToken cancellationToken = default)
     {
         try
         {
-            // 移除对不存在的Id属性的检查，整个条件块已删除
-            // 由于没有Id属性，不再需要ID匹配检查
-            
             await categoryService.UpdateCategoryAsync(category, cancellationToken);
             return NoContent();
         }
@@ -94,7 +91,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     // DELETE: api/category/{id}
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult> DeleteCategory(int id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> DeleteCategory(string id, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -118,7 +115,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     // PUT: api/category/sort
     [HttpPut("sort")]
     [Authorize(Roles = "Admin,User")]
-    public async Task<ActionResult> UpdateCategorySort([FromBody] List<int> categoryIds, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> UpdateCategorySort([FromBody] List<string> categoryIds, CancellationToken cancellationToken = default)
     {
         try
         {

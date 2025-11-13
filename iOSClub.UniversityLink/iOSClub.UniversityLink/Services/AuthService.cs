@@ -136,28 +136,21 @@ public class AuthService : IAuthService
         }
 
         // 根据角色检查权限
-        switch (requiredPermission.ToLower())
+        return requiredPermission.ToLower() switch
         {
-            case "read":
+            "read" =>
                 // 所有用户都有读取权限
-                return true;
-
-            case "write":
-            case "edit":
-            case "update":
+                true,
+            "write" or "edit" or "update" =>
                 // 编辑权限需要User或更高角色
-                return user.Identity == "User" || user.Identity == "Admin";
-
-            case "delete":
+                user.Identity is "User" or "Admin",
+            "delete" =>
                 // 删除权限需要Admin角色
-                return user.Identity == "Admin";
-
-            case "admin":
+                user.Identity == "Admin",
+            "admin" =>
                 // 管理员操作需要Admin角色
-                return user.Identity == "Admin";
-
-            default:
-                return false;
-        }
+                user.Identity == "Admin",
+            _ => false
+        };
     }
 }

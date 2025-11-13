@@ -6,12 +6,14 @@ using UniversityLink.DataModels;
 namespace iOSClub.UniversityLink.Controllers;
 
 // 请求和响应模型定义
+[Serializable]
 public class LoginRequest
 {
     public string Username { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
 }
 
+[Serializable]
 public class RegisterRequest
 {
     public string Username { get; set; } = string.Empty;
@@ -19,6 +21,7 @@ public class RegisterRequest
     public string Email { get; set; } = string.Empty;
 }
 
+[Serializable]
 public class TokenResponse
 {
     public string AccessToken { get; set; } = string.Empty;
@@ -32,20 +35,22 @@ public class AuthController(IAuthService authService, IUserService userService) 
     // POST: api/auth/login
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<ActionResult<TokenResponse>> Login([FromBody] LoginRequest request, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<TokenResponse>> Login([FromBody] LoginRequest request,
+        CancellationToken cancellationToken = default)
     {
         try
         {
             // 生成令牌 - 我们假设有一个验证方法
-            var isValidUser = await authService.ValidateCredentialsAsync(request.Username, request.Password, cancellationToken);
+            var isValidUser =
+                await authService.ValidateCredentialsAsync(request.Username, request.Password, cancellationToken);
             if (!isValidUser)
             {
                 return Unauthorized(new { message = "用户名或密码错误" });
             }
-            
+
             // 生成JWT令牌
-            var token = await authService.GenerateTokenAsync(request.Username ?? string.Empty, cancellationToken);
-            
+            var token = await authService.GenerateTokenAsync(request.Username, cancellationToken);
+
             return Ok(new TokenResponse
             {
                 AccessToken = token,
@@ -61,11 +66,12 @@ public class AuthController(IAuthService authService, IUserService userService) 
             return StatusCode(500, new { message = "登录失败", error = ex.Message });
         }
     }
-    
+
     // POST: api/auth/register
     [HttpPost("register")]
     [AllowAnonymous]
-    public async Task<ActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> Register([FromBody] RegisterRequest request,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -76,10 +82,10 @@ public class AuthController(IAuthService authService, IUserService userService) 
                 // 这里假设UserId会在CreateUserAsync中生成或处理
                 Identity = "Member" // 默认为普通成员
             };
-            
+
             // 创建用户
             await userService.CreateUserAsync(user, request.Password, cancellationToken);
-            
+
             return Ok(new { message = "注册成功" });
         }
         catch (ArgumentException ex)
@@ -91,7 +97,7 @@ public class AuthController(IAuthService authService, IUserService userService) 
             return StatusCode(500, new { message = "注册失败", error = ex.Message });
         }
     }
-    
+
     // POST: api/auth/refresh-token
     [HttpPost("refresh-token")]
     [Authorize]
@@ -100,8 +106,9 @@ public class AuthController(IAuthService authService, IUserService userService) 
         try
         {
             // 从当前令牌中获取用户名
-            var username = authService.GetUsernameFromToken(HttpContext.Request.Headers.Authorization.ToString().Replace("Bearer ", string.Empty));
-            
+            var username = authService.GetUsernameFromToken(HttpContext.Request.Headers.Authorization.ToString()
+                .Replace("Bearer ", string.Empty));
+
             // 检查用户名是否为空
             if (string.IsNullOrEmpty(username))
             {
@@ -110,7 +117,7 @@ public class AuthController(IAuthService authService, IUserService userService) 
 
             // 生成新的令牌
             var newToken = await authService.GenerateTokenAsync(username, cancellationToken);
-            
+
             return Ok(new TokenResponse
             {
                 AccessToken = newToken,
@@ -126,7 +133,7 @@ public class AuthController(IAuthService authService, IUserService userService) 
             return StatusCode(500, new { message = "刷新令牌失败", error = ex.Message });
         }
     }
-    
+
     // GET: api/auth/validate-token
     [HttpGet("validate-token")]
     [Authorize]
@@ -140,22 +147,22 @@ public class AuthController(IAuthService authService, IUserService userService) 
             {
                 return BadRequest(new { message = "无效的授权头" });
             }
-            
+
             var token = authHeader.Replace("Bearer ", string.Empty);
-            
+
             // 验证令牌
             var isValid = authService.ValidateToken(token);
-            
+
             if (!isValid)
             {
                 return Unauthorized(new { message = "令牌无效" });
             }
-            
+
             // 获取令牌中的用户名和角色信息
             var username = authService.GetUsernameFromToken(token);
             var role = User.FindFirst("role")?.Value ?? string.Empty;
             var userId = User.FindFirst("userId")?.Value ?? string.Empty;
-            
+
             return Ok(new TokenValidationResponse
             {
                 IsValid = true,
@@ -169,7 +176,7 @@ public class AuthController(IAuthService authService, IUserService userService) 
             return StatusCode(500, new { message = "验证令牌失败", error = ex.Message });
         }
     }
-    
+
     // GET: api/auth/logout
     [HttpPost("logout")]
     [Authorize]
@@ -189,6 +196,7 @@ public class AuthController(IAuthService authService, IUserService userService) 
 }
 
 // 添加TokenValidationResponse类定义
+[Serializable]
 public class TokenValidationResponse
 {
     public bool IsValid { get; set; }

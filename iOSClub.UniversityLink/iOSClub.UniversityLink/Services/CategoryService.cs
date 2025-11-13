@@ -12,7 +12,7 @@ public class CategoryService(IUnitOfWork unitOfWork) : ICategoryService
     }
     
     // 按ID获取分类
-    public async Task<CategoryModel?> GetCategoryByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<CategoryModel?> GetCategoryByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         // 在当前实现中，我们通过Key查找分类
         // 由于模型中没有Id属性，这里简单返回null
@@ -83,7 +83,7 @@ public class CategoryService(IUnitOfWork unitOfWork) : ICategoryService
     }
     
     // 删除分类
-    public async Task DeleteCategoryAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteCategoryAsync(string id, CancellationToken cancellationToken = default)
     {
         // 在当前实现中，我们通过Key删除分类
         // 由于模型中没有Id属性，这里不执行操作
@@ -91,7 +91,7 @@ public class CategoryService(IUnitOfWork unitOfWork) : ICategoryService
     }
     
     // 更新分类排序
-    public async Task UpdateCategorySortAsync(List<int> categoryIds, CancellationToken cancellationToken = default)
+    public async Task UpdateCategorySortAsync(List<string> categoryIds, CancellationToken cancellationToken = default)
     {
         // 在当前实现中，我们使用Index属性进行排序
         // 由于模型中没有Id属性，这里不执行操作
