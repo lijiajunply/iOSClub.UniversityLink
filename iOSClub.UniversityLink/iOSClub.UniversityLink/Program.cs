@@ -24,6 +24,8 @@ builder.Services.AddAntDesign();
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<AuthenticationStateProvider, Provider>();
+// 注册IHttpContextAccessor
+builder.Services.AddHttpContextAccessor();
 
 // 注册仓储层实现
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
