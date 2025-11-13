@@ -8,7 +8,7 @@ public class CategoryService(IUnitOfWork unitOfWork) : ICategoryService
     // 获取所有分类
     public async Task<List<CategoryModel>> GetAllCategoriesAsync(CancellationToken cancellationToken = default)
     {
-        return (await unitOfWork.Categories.GetAllAsync(false, cancellationToken)).ToList();
+        return (await unitOfWork.Categories.GetAllAsync(true, cancellationToken)).ToList();
     }
 
     // 按ID获取分类
