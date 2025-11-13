@@ -50,11 +50,13 @@ builder.Services.AddAuthentication(options => { options.DefaultScheme = JwtBeare
             ValidateAudience = false, //是否验证Audience
             ValidateIssuerSigningKey = true, //是否验证SecurityKey
             IssuerSigningKey =
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"] ?? "UniversityLinkSecretKey")), //SecurityKey
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"] ??
+                                           "UniversityLinkSecretKey")), //SecurityKey
             ValidateLifetime = true, //启用过期时间验证
             ClockSkew = TimeSpan.Zero //不允许时间偏差
         };
-        
+
         // 配置JWT事件
         options.Events = new JwtBearerEvents
         {
@@ -64,35 +66,36 @@ builder.Services.AddAuthentication(options => { options.DefaultScheme = JwtBeare
                 {
                     context.Response.Headers.Append("Token-Expired", "true");
                 }
+
                 return Task.CompletedTask;
             }
         };
     });
 
 // 配置授权策略
-builder.Services.AddAuthorization(options =>
-{
-    // 默认策略要求认证
-    options.DefaultPolicy = new AuthorizationPolicyBuilder()
+builder.Services.AddAuthorizationBuilder()
+    // 配置授权策略
+    .SetDefaultPolicy(new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
-        .Build();
-    
-    // 管理员策略
-    options.AddPolicy("AdminPolicy", policy => 
-        policy.RequireRole("Admin"));
-    
-    // 用户策略
-    options.AddPolicy("UserPolicy", policy => 
+        .Build())
+    // 配置授权策略
+    .AddPolicy("AdminPolicy", policy =>
+        policy.RequireRole("Admin"))
+    // 配置授权策略
+    .AddPolicy("UserPolicy", policy =>
         policy.RequireRole("Admin", "User"));
-});
 
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyHeader()
+        policy.SetIsOriginAllowed(origin =>
+                origin.EndsWith(".zeabur.app") || // 支持所有 zeabur.app 子域名
+                origin.EndsWith(".xauat.site") || // 支持所有 xauat.site 子域名
+                origin.StartsWith("http://localhost")) // 支持本地开发环境
             .AllowAnyMethod()
-            .AllowAnyOrigin();
+            .AllowAnyHeader()
+            .AllowCredentials(); // 如果需要发送凭据（如cookies、认证头等）
     });
 });
 
