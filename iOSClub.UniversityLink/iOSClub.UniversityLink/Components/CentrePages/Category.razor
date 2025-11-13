@@ -25,18 +25,18 @@
                     Placeholder="Please select"
                     DataSource="@AllIcons"
                     @bind-Value="@context.Icon"
-                    ItemValue="s => s.font_class"
-                    ItemLabel="s => s.name"
+                    ItemValue="s => s.FontClass"
+                    ItemLabel="s => s.Name"
                     TItemValue="string"
                     TItem="IconModel"
                     Context="model"
                     ListboxStyle="display:flex;height: 200px;flex-flow: wrap; max-width: 500px; align-content: baseline;"
                     Style="width: 100%; margin-top: 8px;">
                 <LabelTemplate>
-                    @model.name
+                    @model.Name
                 </LabelTemplate>
                 <ItemTemplate Context="m">
-                    <IconFont Style="font-size: 32px" Type="@($"icon-{m.font_class}")"/>
+                    <IconFont Style="font-size: 32px" Type="@($"icon-{m.FontClass}")"/>
                 </ItemTemplate>
                 <DropdownRender Context="m">
                     @m
@@ -67,15 +67,15 @@
                         Placeholder="Please select"
                         DataSource="@AllIcons"
                         @bind-Value="@context.Icon"
-                        ItemValue="s => s.font_class"
-                        ItemLabel="s => s.name"
+                        ItemValue="s => s.FontClass"
+                        ItemLabel="s => s.Name"
                         Context="model"
                         ListboxStyle="display:flex;height: 200px;flex-flow: wrap; max-width: 500px; align-content: baseline;">
                     <LabelTemplate>
-                        @model.name
+                        @model.Name
                     </LabelTemplate>
                     <ItemTemplate Context="m">
-                        <IconFont Style="font-size: 32px" Type="@($"icon-{m.font_class}")"/>
+                        <IconFont Style="font-size: 32px" Type="@($"icon-{m.FontClass}")"/>
                     </ItemTemplate>
                     <DropdownRender Context="m">
                         @m

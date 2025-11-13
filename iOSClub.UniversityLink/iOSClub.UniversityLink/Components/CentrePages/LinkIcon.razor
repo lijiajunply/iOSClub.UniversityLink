@@ -29,10 +29,10 @@
     {
         <GridCol Xs="12" Sm="12" Md="8" Lg="8" Xl="6" Xxl="6">
             <Card Hoverable Bordered="false" Style="border-radius: 10px;" BodyStyle="margin: 5px auto;text-align: center">
-                <IconFont Type="@($"icon-{context.font_class}")" Style="font-size: 30px"/>
+                <IconFont Type="@($"icon-{context.FontClass}")" Style="font-size: 30px"/>
                 <br/>
-                <p Style="font-size:18px;font-weight: bold">@context.name</p>
-                <Paragraph Copyable>@context.font_class</Paragraph>
+                <p Style="font-size:18px;font-weight: bold">@context.Name</p>
+                <Paragraph Copyable>@context.FontClass</Paragraph>
             </Card>
         </GridCol>
     }
@@ -87,8 +87,8 @@
         IconModels = SelectValue switch
         {
             "全部" => AllIcons,
-            "类型" => AllIcons.Where(x => x.font_class.Contains(SearchValue)).ToArray(),
-            "名称" => AllIcons.Where(x => x.name.Contains(SearchValue)).ToArray(),
+            "类型" => AllIcons.Where(x => x.FontClass.Contains(SearchValue)).ToArray(),
+            "名称" => AllIcons.Where(x => x.Name.Contains(SearchValue)).ToArray(),
             _ => IconModels
         };
     }
