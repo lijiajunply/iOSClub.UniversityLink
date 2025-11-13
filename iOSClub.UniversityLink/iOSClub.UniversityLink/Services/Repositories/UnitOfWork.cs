@@ -71,7 +71,7 @@ public class UnitOfWork : IUnitOfWork
         GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (disposing)
         {
@@ -87,7 +87,7 @@ public class UnitOfWork : IUnitOfWork
         GC.SuppressFinalize(this);
     }
 
-    protected virtual async ValueTask DisposeAsyncCore()
+    private async ValueTask DisposeAsyncCore()
     {
         if (_transaction != null)
         {

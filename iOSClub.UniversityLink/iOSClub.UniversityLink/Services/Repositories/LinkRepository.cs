@@ -1,9 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UniversityLink.DataModels;
 using UniversityLink.DataModels.Repositories;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace iOSClub.UniversityLink.Services.Repositories;
 
