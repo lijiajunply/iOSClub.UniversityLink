@@ -43,7 +43,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
         }
     }
 
-    [HttpGet("/byName/{name}")]
+    [HttpGet("byName/{name}")]
     public async Task<ActionResult<CategoryModel>> GetCategoryByName(string name,
         CancellationToken cancellationToken = default)
     {
@@ -84,7 +84,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     }
     
     // PUT: api/category/{id}
-    [HttpPost("/update")]
+    [HttpPost("update")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> UpdateCategory([FromBody] CategoryModel category, CancellationToken cancellationToken = default)
     {
