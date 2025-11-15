@@ -88,7 +88,7 @@ public class LinkController(ILinkService linkService) : ControllerBase
 
     // POST: api/link
     [HttpPost("/update")]
-    [Authorize(Roles = "Admin,User")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<LinkModel>> CreateLink([FromBody] LinkModel link,
         CancellationToken cancellationToken = default)
     {
@@ -114,8 +114,8 @@ public class LinkController(ILinkService linkService) : ControllerBase
 
     // PUT: api/link/{id}
     [HttpPost()]
-    [Authorize(Roles = "Admin,User")]
-    public async Task<ActionResult> UpdateLink(string id, [FromBody] LinkModel link,
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> UpdateLink([FromBody] LinkModel link,
         CancellationToken cancellationToken = default)
     {
         try
@@ -141,7 +141,7 @@ public class LinkController(ILinkService linkService) : ControllerBase
 
     // DELETE: api/link/{id}
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin,User")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteLink(string id, CancellationToken cancellationToken = default)
     {
         try
@@ -161,7 +161,7 @@ public class LinkController(ILinkService linkService) : ControllerBase
 
     // PUT: api/link/sort/{categoryId}
     [HttpPut("sort/{categoryId}")]
-    [Authorize(Roles = "Admin,User")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> UpdateLinkSort(string categoryId, [FromBody] List<string> linkIds,
         CancellationToken cancellationToken = default)
     {

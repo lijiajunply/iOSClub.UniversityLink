@@ -42,10 +42,29 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
             return StatusCode(500, new { message = "获取分类失败", error = ex.Message });
         }
     }
+
+    [HttpGet("/byName/{name}")]
+    public async Task<ActionResult<CategoryModel>> GetCategoryByName(string name,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var category = await categoryService.GetCategoryByName(name, cancellationToken);
+            return Ok(category);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "获取分类失败", error = ex.Message });
+        }
+    }
     
     // POST: api/category
     [HttpPost]
-    [Authorize(Roles = "Admin,User")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<CategoryModel>> CreateCategory([FromBody] CategoryModel category, CancellationToken cancellationToken = default)
     {
         try
@@ -66,7 +85,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     
     // PUT: api/category/{id}
     [HttpPost("/update")]
-    [Authorize(Roles = "Admin,User")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> UpdateCategory([FromBody] CategoryModel category, CancellationToken cancellationToken = default)
     {
         try
@@ -114,7 +133,7 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     
     // PUT: api/category/sort
     [HttpPut("sort")]
-    [Authorize(Roles = "Admin,User")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> UpdateCategorySort([FromBody] List<string> categoryIds, CancellationToken cancellationToken = default)
     {
         try

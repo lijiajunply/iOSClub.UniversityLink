@@ -110,4 +110,9 @@ public class CategoryService(IUnitOfWork unitOfWork) : ICategoryService
         // 由于仓储没有Search方法，这里返回所有分类
         return await GetAllCategoriesAsync(cancellationToken);
     }
+
+    public async Task<CategoryModel?> GetCategoryByName(string name, CancellationToken cancellationToken)
+    {
+        return await unitOfWork.Categories.GetByNameAsync(name, true, cancellationToken);
+    }
 }

@@ -24,4 +24,5 @@ public interface ICategoryService
     
     // 搜索分类
     Task<List<CategoryModel>> SearchCategoriesAsync(string keyword, CancellationToken cancellationToken = default);
+    Task<CategoryModel?> GetCategoryByName(string name, CancellationToken cancellationToken);
 }
